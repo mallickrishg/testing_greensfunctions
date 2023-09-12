@@ -1,4 +1,6 @@
 clear
+addpath functions/
+
 % Elastic parameters
 G = 1;
 % construct mesh for cuboid boundary
@@ -11,6 +13,10 @@ L_x = 2;
 L_y = 3;
 dx = 0.1;
 rcv = construct_box(x0,y0,L_x,L_y,dx);
+left = rcv.xc(:,1) == x0;
+right = rcv.xc(:,1) == x0 + L_x;
+bot = rcv.xc(:,2) == y0;
+top = rcv.xc(:,2) == y0 + L_y;
 
 % observation points
 obs = rcv.xc + rcv.nv*1e-12;
@@ -30,10 +36,6 @@ Tau_t = Stress_t(:,:,1).*rcv.nv(:,1) + Stress_t(:,:,2).*rcv.nv(:,2);
 
 % solve BVP using BEM
 K = zeros(rcv.N,rcv.N);
-left = rcv.xc(:,1) == x0;
-right = rcv.xc(:,1) == x0 + L_x;
-bot = rcv.xc(:,2) == y0;
-top = rcv.xc(:,2) == y0 + L_y;
 
 % assemble kernel
 K(left,:) = Disp_t(left,:);
@@ -46,11 +48,10 @@ BC = zeros(rcv.N,1);
 % BC(left) = -(linspace(-1,0,length(find(left))).^2);
 % BC(right) = linspace(0,1,length(find(right))).^2;
 % linspace(-1,-1,length(find(left)))
-BC(left) = -1;
-BC(right) = 1;
+BC(left) = -.5;
+BC(right) = -.5;
 BC(top) = 0;
 BC(bot) = 0;
-% BC(:) = -5e-3;
 
 % solve linear problem
 slip_bem = K\BC;
@@ -138,79 +139,79 @@ title('\sigma_{yz}')
 colormap bluewhitered(20)
 set(findobj(gcf,'type','axes'),'FontSize',15,'LineWidth', 1);
 
-%% use cuboid kernels to calculate displacement and stress
-% calculate stresses from a shear zone
-source_strain = (L_x+L_y)/L_x/L_y;
-
-[Stress_12,Stress_13] = calc_stressgreensfunctions_antiplaneshz(G,...
-                        obs_plot(:,1) - (x0 + L_x/2),obs_plot(:,2),...
-                        y0,L_x,L_y);
-s12_shz = Stress_12(:,1).*source_strain;
-s13_shz = Stress_12(:,2).*source_strain;
-
-% calculate displacements
-[Disp_f] = calc_dispgreensfunctions_antiplaneshz(obs_plot(:,1) - (x0 + L_x/2),obs_plot(:,2),...
-                                               y0,L_x,L_y);
-u1_shz = Disp_f(:,1).*source_strain;
-
-figure(11),clf
-% scatter(obs_plot(:,1),obs_plot(:,2),500,u1_shz,'o','filled','MarkerEdgeColor','k')
+% %% use cuboid kernels to calculate displacement and stress
+% % calculate stresses from a shear zone
+% source_strain = (L_x+L_y)/L_x/L_y;
+% 
+% [Stress_12,Stress_13] = calc_stressgreensfunctions_antiplaneshz(G,...
+%                         obs_plot(:,1) - (x0 + L_x/2),obs_plot(:,2),...
+%                         y0,L_x,L_y);
+% s12_shz = Stress_12(:,1).*source_strain;
+% s13_shz = Stress_12(:,2).*source_strain;
+% 
+% % calculate displacements
+% [Disp_f] = calc_dispgreensfunctions_antiplaneshz(obs_plot(:,1) - (x0 + L_x/2),obs_plot(:,2),...
+%                                                y0,L_x,L_y);
+% u1_shz = Disp_f(:,1).*source_strain;
+% 
+% figure(11),clf
+% % scatter(obs_plot(:,1),obs_plot(:,2),500,u1_shz,'o','filled','MarkerEdgeColor','k')
+% % axis tight equal
+% % box on
+% % colorbar
+% % colormap bluewhitered
+% 
+% subplot(3,1,1)
+% pcolor(x,y,reshape(u1_shz,ny,nx)), shading interp
+% hold on
+% plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
 % axis tight equal
-% box on
 % colorbar
-% colormap bluewhitered
-
-subplot(3,1,1)
-pcolor(x,y,reshape(u1_shz,ny,nx)), shading interp
-hold on
-plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
-axis tight equal
-colorbar
-clim([-1 1])
-xlabel('x'), ylabel('y')
-title('u_z (Lambert & Barbot, 2016)')
-
-subplot(3,1,2)
-pcolor(x,y,reshape(s12_shz,ny,nx)), shading interp
-hold on
-plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
-axis tight equal
-clim([-1 1])
-colorbar
-xlabel('x'), ylabel('y')
-title('\sigma_{xz}')
-
-subplot(3,1,3)
-pcolor(x,y,reshape(s13_shz,ny,nx)), shading interp
-hold on
-plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
-axis tight equal
-clim([-1 1])
-colorbar
-xlabel('x'), ylabel('y')
-title('\sigma_{yz}')
-
-colormap bluewhitered(20)
-set(findobj(gcf,'type','axes'),'FontSize',15,'LineWidth', 1);
-
-% residuals
-figure(12),clf
-subplot(3,1,1)
-pcolor(x,y,reshape(u1_shz-u1_bem,ny,nx)), shading interp
-axis tight equal
-colorbar
-clim([-1 1]*0.5)
-
-subplot(3,1,2)
-pcolor(x,y,reshape(s12_shz-s12_bem,ny,nx)), shading interp
-axis tight equal
-clim([-1 1]*0.5)
-colorbar
-
-subplot(3,1,3)
-pcolor(x,y,reshape(s13_shz-s13_bem,ny,nx)), shading interp
-axis tight equal
-clim([-1 1]*0.5)
-colorbar
-
-colormap bluewhitered(100)
+% clim([-1 1])
+% xlabel('x'), ylabel('y')
+% title('u_z (Lambert & Barbot, 2016)')
+% 
+% subplot(3,1,2)
+% pcolor(x,y,reshape(s12_shz,ny,nx)), shading interp
+% hold on
+% plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
+% axis tight equal
+% clim([-1 1])
+% colorbar
+% xlabel('x'), ylabel('y')
+% title('\sigma_{xz}')
+% 
+% subplot(3,1,3)
+% pcolor(x,y,reshape(s13_shz,ny,nx)), shading interp
+% hold on
+% plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
+% axis tight equal
+% clim([-1 1])
+% colorbar
+% xlabel('x'), ylabel('y')
+% title('\sigma_{yz}')
+% 
+% colormap bluewhitered(20)
+% set(findobj(gcf,'type','axes'),'FontSize',15,'LineWidth', 1);
+% 
+% % residuals
+% figure(12),clf
+% subplot(3,1,1)
+% pcolor(x,y,reshape(u1_shz-u1_bem,ny,nx)), shading interp
+% axis tight equal
+% colorbar
+% clim([-1 1]*0.5)
+% 
+% subplot(3,1,2)
+% pcolor(x,y,reshape(s12_shz-s12_bem,ny,nx)), shading interp
+% axis tight equal
+% clim([-1 1]*0.5)
+% colorbar
+% 
+% subplot(3,1,3)
+% pcolor(x,y,reshape(s13_shz-s13_bem,ny,nx)), shading interp
+% axis tight equal
+% clim([-1 1]*0.5)
+% colorbar
+% 
+% colormap bluewhitered(100)
