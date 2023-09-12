@@ -44,6 +44,9 @@ Rx = rectangle_x;
 Ry = rectangle_y;
 ymax = @(x) Ry*(1 - 2*x/Rx);
 
+% fun_u = @(x,y,x0,y0) pointforce_disp(x,y,x0,y0);
+% fun_s12 = @(x,y,x0,y0) pointforce_s12(x,y,x0,y0);
+% fun_s13 = @(x,y,x0,y0) pointforce_s13(x,y,x0,y0);
 parfor k=1:numel(x_mat)
     fun_u = @(x0,y0) pointforce_disp(x_mat(k),y_mat(k),x0,y0);
     fun_s12 = @(x0,y0) pointforce_s12(x_mat(k),y_mat(k),x0,y0);
@@ -55,9 +58,14 @@ parfor k=1:numel(x_mat)
     % s13(k) = mu.*integral2(fun_s13,-Rx/2,Rx/2,-Ry/2,Ry/2)./area_source;
 
     % triangle source
+    % u1(k) = integral2(@(x0,y0) fun_u(x_mat(k),y_mat(k),x0,y0),0,Rx,-Ry,ymax)./area_source;
+    % s12(k) = mu.*integral2(@(x0,y0) fun_s12(x_mat(k),y_mat(k),x0,y0),0,Rx,-Ry,ymax)./area_source;
+    % s13(k) = mu.*integral2(@(x0,y0) fun_s13(x_mat(k),y_mat(k),x0,y0),0,Rx,-Ry,ymax)./area_source;
+
     u1(k) = integral2(fun_u,0,Rx,-Ry,ymax)./area_source;
     s12(k) = mu.*integral2(fun_s12,0,Rx,-Ry,ymax)./area_source;
     s13(k) = mu.*integral2(fun_s13,0,Rx,-Ry,ymax)./area_source;
+
 end
 toc
 
