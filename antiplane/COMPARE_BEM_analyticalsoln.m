@@ -5,7 +5,7 @@ addpath functions/
 G = 1;
 % construct mesh for cuboid boundary
 % bottom left corner
-x0 = -0.1;
+x0 = -1;
 y0 = -1.5;
 
 % dimensions of box
@@ -73,14 +73,12 @@ set(findobj(gcf,'type','axes'),'FontSize',20,'LineWidth', 1);
 % compute displacement and stress kernels (for a slip source)
 % Disp - [Nobs x Nsources]
 % Stress - [Nobs x Nsources x 2], for σ12, σ13
-[Disp_f,Stress_f] = compute_disp_stress_kernels_fault(G,rcv,obs);
+% [Disp_f,Stress_f] = compute_disp_stress_kernels_fault(G,rcv,obs);
+
+% compute displacement and stress kernels (for a traction source)
+[Disp_f,Stress_f] = compute_disp_stress_kernels_force(G,rcv,obs);
 
 Tau_f = Stress_f(:,:,1).*rcv.nv(:,1) + Stress_f(:,:,2).*rcv.nv(:,2);
-
-% % compute displacement and stress kernels (for a traction source)
-% [Disp_t,Stress_t] = compute_disp_stress_kernels_force(G,rcv,obs);
-% 
-% Tau_t = Stress_t(:,:,1).*rcv.nv(:,1) + Stress_t(:,:,2).*rcv.nv(:,2);
 
 % solve BVP using BEM
 K = zeros(rcv.N,rcv.N);
@@ -107,9 +105,13 @@ BC(top|bot) = BC_tau(top|bot);
 slip_bem = pinv(K)*BC;
 
 figure(100),clf
+subplot(211)
 plot3(rcv.xc(:,1),rcv.xc(:,2),slip_bem,'k.-','LineWidth',2)
 box on, grid on
 axis tight 
+
+subplot(212)
+plot(slip_bem,'.-')
 
 figure(1),clf
 scatter(obs(:,1),obs(:,2),100,Disp_f*slip_bem,'o','filled','MarkerEdgeColor','k')
