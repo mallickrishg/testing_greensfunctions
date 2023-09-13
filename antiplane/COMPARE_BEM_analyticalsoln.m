@@ -5,13 +5,13 @@ addpath functions/
 G = 1;
 % construct mesh for cuboid boundary
 % bottom left corner
-x0 = -0.5;
+x0 = -0.1;
 y0 = -1.5;
 
 % dimensions of box
 L_x = 2*abs(x0);
 L_y = 2*abs(y0);
-dx = 0.1;
+dx = 0.05;
 rcv = construct_box(x0,y0,L_x,L_y,dx);
 left = rcv.xc(:,1) == x0;
 right = rcv.xc(:,1) == x0 + L_x;
@@ -86,18 +86,22 @@ Tau_f = Stress_f(:,:,1).*rcv.nv(:,1) + Stress_f(:,:,2).*rcv.nv(:,2);
 K = zeros(rcv.N,rcv.N);
 
 % assemble kernel
-K(left,:) = Tau_f(left,:);
-K(right,:) = Tau_f(right,:);
+K(left,:) = Disp_f(left,:);
+K(right,:) = Disp_f(right,:);
 K(bot,:) = Tau_f(bot,:);
 K(top,:) = Tau_f(top,:);
 
 % specify right-hand side of BVP
 BC = zeros(rcv.N,1);
+BC_tau = s12_shz.*rcv.nv(:,1) + s13_shz.*rcv.nv(:,2);
+BC_disp = u1_shz;
+BC(left|right) = BC_disp(left|right);
+BC(top|bot) = BC_tau(top|bot);
 % BC(left) = s12_shz(left);
 % BC(right) = -s12_shz(right);
 % BC(top) = s13_shz(top);
 % BC(bot) = -s13_shz(bot);
-BC = s12_shz.*rcv.nv(:,1) + s13_shz.*rcv.nv(:,2);
+
 
 % solve linear problem
 slip_bem = pinv(K)*BC;
@@ -139,12 +143,14 @@ set(findobj(gcf,'type','axes'),'FontSize',20,'LineWidth', 1);
 figure(20),clf
 subplot(311)
 plot(u1_shz,'o-'), hold on
-plot(Disp_f*slip_bem,'.-')
+plot(Disp_f*slip_bem,'r.-')
 
 subplot(312)
 plot(s12_shz,'o-'), hold on
-plot(Stress_f(:,:,1)*slip_bem,'.-')
+plot(Stress_f(:,:,1)*slip_bem,'r.-')
+% plot(BC,'rx-')
 
 subplot(313)
 plot(s13_shz,'o-'), hold on
-plot(Stress_f(:,:,2)*slip_bem,'.-')
+plot(Stress_f(:,:,2)*slip_bem,'r.-')
+% plot(BC,'rx-')
