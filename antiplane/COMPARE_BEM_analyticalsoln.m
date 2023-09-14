@@ -23,7 +23,7 @@ top = rcv.xc(:,2) == y0 + L_y;
 % obs = rcv.xc;
 obs = rcv.xc - rcv.nv.*1e-9;% -ve normal vector means outside the domain
 
-source_strain = 0.8;
+source_strain = 0.7;
 
 [Stress_12,~] = calc_stressgreensfunctions_antiplaneshz(G,...
                         obs(:,1) - (x0 + L_x/2),obs(:,2),...
@@ -95,24 +95,23 @@ BC_tau = s12_shz.*rcv.nv(:,1) + s13_shz.*rcv.nv(:,2);
 BC_disp = u1_shz;
 BC(left|right) = BC_tau(left|right);
 BC(top|bot) = BC_tau(top|bot);
-% BC(left) = s12_shz(left);
-% BC(right) = -s12_shz(right);
-% BC(top) = s13_shz(top);
-% BC(bot) = -s13_shz(bot);
 
-
-% solve linear problem
+% solve linear BEM problem
 slip_bem = pinv(K)*BC;
 
+% plot slip distribution
 figure(5),clf
 subplot(211)
 plot3(rcv.xc(:,1),rcv.xc(:,2),slip_bem,'k.-','LineWidth',2)
 box on, grid on
 axis tight 
+ylabel('y'), xlabel('x'), zlabel('slip')
 
 subplot(212)
 plot(slip_bem,'.-')
+ylabel('slip'), xlabel('node')
 
+% plot displacements and stresses on the boundary
 figure(1),clf
 scatter(obs(:,1),obs(:,2),100,Disp_f*slip_bem,'o','filled','MarkerEdgeColor','k')
 axis equal
@@ -146,14 +145,18 @@ figure(20),clf
 subplot(311)
 plot(u1_shz,'o-'), hold on
 plot(Disp_f*slip_bem,'r.-')
+legend('L&B16','bem')
+ylabel('u_1'), xlabel('node')
 
 subplot(312)
 plot(s12_shz,'o-'), hold on
 plot(Stress_f(:,:,1)*slip_bem,'r.-')
+ylabel('\sigma_{12}'), xlabel('node')
 
 subplot(313)
 plot(s13_shz,'o-'), hold on
 plot(Stress_f(:,:,2)*slip_bem,'r.-')
+ylabel('\sigma_{13}'), xlabel('node')
 
 %% plot results in the bulk
 % calculate displacements and stresses in the medium
@@ -173,7 +176,7 @@ s13_bem_bulk = Stress_f(:,:,2)*slip_bem;
 
 % make s12 discontinuous
 in = inpolygon(obs_plot(:,1),obs_plot(:,2),rcv.xc(:,1),rcv.xc(:,2));
-% s12_bem_bulk(in) = s12_bem_bulk(in) - G*source_strain;
+% s12_bem_bulk(in) = s12_bem_bulk(in) - 2*G*source_strain;
 
 % compute u,σ using L&B 2016 solutions
 [Stress_12,~] = calc_stressgreensfunctions_antiplaneshz(G,...
