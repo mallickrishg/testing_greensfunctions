@@ -21,9 +21,9 @@ top = rcv.xc(:,2) == y0 + L_y;
 %% use cuboid kernels to calculate displacement and stress
 % calculate stresses from a shear zone
 % obs = rcv.xc;
-obs = rcv.xc - rcv.nv.*1e-9;% -ve normal vector means outside the domain
+obs = rcv.xc - rcv.nv.*1e-12;% -ve normal vector means outside the domain
 
-source_strain = 0.7;
+source_strain = 0.5;
 
 [Stress_12,~] = calc_stressgreensfunctions_antiplaneshz(G,...
                         obs(:,1) - (x0 + L_x/2),obs(:,2),...
@@ -97,28 +97,28 @@ BC(left|right) = BC_tau(left|right);
 BC(top|bot) = BC_tau(top|bot);
 
 % solve linear BEM problem
-slip_bem = pinv(K)*BC;
+source_bem = pinv(K)*BC;
 
 % modify slip_bem
 dv = 0;
-xv = (linspace(-1,1,length(slip_bem(left)))');
-slip_bem(left) = slip_bem(left) + dv.*xv;
-slip_bem(right) = slip_bem(right) + dv.*xv;
+xv = (linspace(-1,1,length(source_bem(left)))');
+source_bem(left) = source_bem(left) + dv.*xv;
+source_bem(right) = source_bem(right) + dv.*xv;
 
 % plot BEM slip distribution
 figure(5),clf
 subplot(211)
-plot3(rcv.xc(:,1),rcv.xc(:,2),slip_bem,'k.-','LineWidth',2)
+plot3(rcv.xc(:,1),rcv.xc(:,2),source_bem,'k.-','LineWidth',2)
 box on, grid on
 axis tight 
 ylabel('y'), xlabel('x'), zlabel('slip')
 
 subplot(212)
-plot(slip_bem,'.-')
-ylabel('slip'), xlabel('node')
+plot(source_bem,'.-')
+ylabel('source strength'), xlabel('node')
 
 % plot displacements and stresses on the boundary
-u1_bem = Disp_f*slip_bem;
+u1_bem = Disp_f*source_bem;
 figure(1),clf
 scatter(obs(:,1),obs(:,2),100,u1_bem,'o','filled','MarkerEdgeColor','k')
 axis equal
@@ -130,7 +130,7 @@ set(gca,'Fontsize',20,'Linewidth',1)
 
 figure(2),clf
 subplot(2,1,1)
-scatter(obs(:,1),obs(:,2),100,Stress_f(:,:,1)*slip_bem,'o','filled','MarkerEdgeColor','k')
+scatter(obs(:,1),obs(:,2),100,Stress_f(:,:,1)*source_bem,'o','filled','MarkerEdgeColor','k')
 axis equal
 box on
 colorbar
@@ -138,7 +138,7 @@ title('\sigma_{12}')
 clim([-1 1])
 
 subplot(2,1,2)
-scatter(obs(:,1),obs(:,2),100,Stress_f(:,:,2)*slip_bem,'o','filled','MarkerEdgeColor','k')
+scatter(obs(:,1),obs(:,2),100,Stress_f(:,:,2)*source_bem,'o','filled','MarkerEdgeColor','k')
 axis equal
 box on
 colorbar
@@ -158,18 +158,18 @@ ylim([0 max(get(gca,'YLim'))])
 figure(20),clf
 subplot(311)
 plot(u1_shz,'o-'), hold on
-plot(Disp_f*slip_bem,'r.-')
+plot(Disp_f*source_bem,'r.-')
 legend('L&B16','bem')
 ylabel('u_1'), xlabel('node')
 
 subplot(312)
 plot(s12_shz,'o-'), hold on
-plot(Stress_f(:,:,1)*slip_bem,'r.-')
+plot(Stress_f(:,:,1)*source_bem,'r.-')
 ylabel('\sigma_{12}'), xlabel('node')
 
 subplot(313)
 plot(s13_shz,'o-'), hold on
-plot(Stress_f(:,:,2)*slip_bem,'r.-')
+plot(Stress_f(:,:,2)*source_bem,'r.-')
 ylabel('\sigma_{13}'), xlabel('node')
 
 %% plot results in the bulk
@@ -184,9 +184,9 @@ obs_plot = [X(:), Y(:)];
 
 % compute u,σ using BEM
 [Disp_f,Stress_f] = compute_disp_stress_kernels_force(G,rcv,obs_plot);
-u1_bem_bulk = Disp_f*slip_bem;
-s12_bem_bulk = Stress_f(:,:,1)*slip_bem;
-s13_bem_bulk = Stress_f(:,:,2)*slip_bem;
+u1_bem_bulk = Disp_f*source_bem;
+s12_bem_bulk = Stress_f(:,:,1)*source_bem;
+s13_bem_bulk = Stress_f(:,:,2)*source_bem;
 
 % make s12 discontinuous
 in = inpolygon(obs_plot(:,1),obs_plot(:,2),rcv.xc(:,1),rcv.xc(:,2));
