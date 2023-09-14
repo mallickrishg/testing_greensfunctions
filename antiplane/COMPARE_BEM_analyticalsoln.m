@@ -6,12 +6,12 @@ G = 1;
 % construct mesh for cuboid boundary
 % bottom left corner
 x0 = -0.5;
-y0 = -1;
+y0 = -1.5;
 
 % dimensions of box
 L_x = 2*abs(x0);
 L_y = 2*abs(y0);
-dx = 0.05;
+dx = 0.01;
 rcv = construct_box(x0,y0,L_x,L_y,dx);
 left = rcv.xc(:,1) == x0;
 right = rcv.xc(:,1) == x0 + L_x;
@@ -99,7 +99,13 @@ BC(top|bot) = BC_tau(top|bot);
 % solve linear BEM problem
 slip_bem = pinv(K)*BC;
 
-% plot slip distribution
+% modify slip_bem
+dv = 0;
+xv = (linspace(-1,1,length(slip_bem(left)))');
+slip_bem(left) = slip_bem(left) + dv.*xv;
+slip_bem(right) = slip_bem(right) + dv.*xv;
+
+% plot BEM slip distribution
 figure(5),clf
 subplot(211)
 plot3(rcv.xc(:,1),rcv.xc(:,2),slip_bem,'k.-','LineWidth',2)
@@ -112,8 +118,9 @@ plot(slip_bem,'.-')
 ylabel('slip'), xlabel('node')
 
 % plot displacements and stresses on the boundary
+u1_bem = Disp_f*slip_bem;
 figure(1),clf
-scatter(obs(:,1),obs(:,2),100,Disp_f*slip_bem,'o','filled','MarkerEdgeColor','k')
+scatter(obs(:,1),obs(:,2),100,u1_bem,'o','filled','MarkerEdgeColor','k')
 axis equal
 box on
 colorbar
@@ -140,6 +147,13 @@ title('\sigma_{13}')
 colormap bluewhitered(20)
 set(findobj(gcf,'type','axes'),'FontSize',20,'LineWidth', 1);
 
+% plot effective slip BC
+figure(3),clf
+stairs(rcv.xc(left,2),u1_bem(right)-flipud(u1_bem(left)),'-','LineWidth',2)
+axis tight
+xlabel('y'), ylabel('u^+ - u^-')
+set(gca,'FontSize',15,'LineWidth',1)
+ylim([0 max(get(gca,'YLim'))])
 %% compare displacements & stresses at the boundary
 figure(20),clf
 subplot(311)
@@ -176,7 +190,7 @@ s13_bem_bulk = Stress_f(:,:,2)*slip_bem;
 
 % make s12 discontinuous
 in = inpolygon(obs_plot(:,1),obs_plot(:,2),rcv.xc(:,1),rcv.xc(:,2));
-s12_bem_bulk(in) = s12_bem_bulk(in) - 2*G*source_strain;
+% s12_bem_bulk(in) = s12_bem_bulk(in) - 2*G*source_strain;
 
 % compute u,σ using L&B 2016 solutions
 [Stress_12,~] = calc_stressgreensfunctions_antiplaneshz(G,...
