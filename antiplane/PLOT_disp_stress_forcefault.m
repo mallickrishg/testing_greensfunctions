@@ -25,13 +25,15 @@ a = 1;
 % s13plot = s13(X(:),Y(:),a);
 
 % for a dipping source
-dip = 0;
+dip = 90;
 [uplot,s12plot,s13plot] = calc_disp_stress_forcefault(X(:),Y(:),a,dip);
 
 figure(1),clf
 pcolor(x,y,reshape(uplot,ny,nx)), shading interp
 axis tight equal
 colorbar
+xlabel('x'),ylabel('y')
+title('Displacement')
 colormap bluewhitered
 
 figure(2),clf
@@ -40,9 +42,13 @@ pcolor(x,y,reshape(s12plot,ny,nx)), shading interp
 axis tight equal
 clim([-1 1]*.5)
 colorbar
+xlabel('x'),ylabel('y')
+title('\sigma_{12}')
 
 subplot(212)
 pcolor(x,y,reshape(s13plot,ny,nx)), shading interp
 axis tight equal
 colorbar
+xlabel('x'),ylabel('y')
+title('\sigma_{13}')
 colormap bluewhitered(20)
