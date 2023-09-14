@@ -5,8 +5,8 @@ addpath functions/
 G = 1;
 % construct mesh for cuboid boundary
 % bottom left corner
-x0 = -1;
-y0 = -1.5;
+x0 = -0.5;
+y0 = -1;
 
 % dimensions of box
 L_x = 2*abs(x0);
@@ -21,11 +21,11 @@ top = rcv.xc(:,2) == y0 + L_y;
 %% use cuboid kernels to calculate displacement and stress
 % calculate stresses from a shear zone
 % obs = rcv.xc;
-obs = rcv.xc - rcv.nv.*1e-9;
+obs = rcv.xc - rcv.nv.*1e-9;% -ve normal vector means outside the domain
 
-source_strain = 1;
+source_strain = 0.8;
 
-[Stress_12,Stress_13] = calc_stressgreensfunctions_antiplaneshz(G,...
+[Stress_12,~] = calc_stressgreensfunctions_antiplaneshz(G,...
                         obs(:,1) - (x0 + L_x/2),obs(:,2),...
                         y0,L_x,L_y);
 s12_shz = Stress_12(:,1).*source_strain;
@@ -84,8 +84,8 @@ Tau_f = Stress_f(:,:,1).*rcv.nv(:,1) + Stress_f(:,:,2).*rcv.nv(:,2);
 K = zeros(rcv.N,rcv.N);
 
 % assemble kernel
-K(left,:) = Disp_f(left,:);
-K(right,:) = Disp_f(right,:);
+K(left,:) = Tau_f(left,:);
+K(right,:) = Tau_f(right,:);
 K(bot,:) = Tau_f(bot,:);
 K(top,:) = Tau_f(top,:);
 
@@ -93,7 +93,7 @@ K(top,:) = Tau_f(top,:);
 BC = zeros(rcv.N,1);
 BC_tau = s12_shz.*rcv.nv(:,1) + s13_shz.*rcv.nv(:,2);
 BC_disp = u1_shz;
-BC(left|right) = BC_disp(left|right);
+BC(left|right) = BC_tau(left|right);
 BC(top|bot) = BC_tau(top|bot);
 % BC(left) = s12_shz(left);
 % BC(right) = -s12_shz(right);
@@ -104,7 +104,7 @@ BC(top|bot) = BC_tau(top|bot);
 % solve linear problem
 slip_bem = pinv(K)*BC;
 
-figure(100),clf
+figure(5),clf
 subplot(211)
 plot3(rcv.xc(:,1),rcv.xc(:,2),slip_bem,'k.-','LineWidth',2)
 box on, grid on
@@ -141,7 +141,7 @@ title('\sigma_{13}')
 colormap bluewhitered(20)
 set(findobj(gcf,'type','axes'),'FontSize',20,'LineWidth', 1);
 
-%% compare displacements & stresses
+%% compare displacements & stresses at the boundary
 figure(20),clf
 subplot(311)
 plot(u1_shz,'o-'), hold on
@@ -150,9 +150,107 @@ plot(Disp_f*slip_bem,'r.-')
 subplot(312)
 plot(s12_shz,'o-'), hold on
 plot(Stress_f(:,:,1)*slip_bem,'r.-')
-% plot(BC,'rx-')
 
 subplot(313)
 plot(s13_shz,'o-'), hold on
 plot(Stress_f(:,:,2)*slip_bem,'r.-')
-% plot(BC,'rx-')
+
+%% plot results in the bulk
+% calculate displacements and stresses in the medium
+nx = 100;
+ny = nx/2;
+
+x = linspace(-6,6,nx);
+y = linspace(-3,3,ny);
+[X,Y] = meshgrid(x,y);
+obs_plot = [X(:), Y(:)];
+
+% compute u,σ using BEM
+[Disp_f,Stress_f] = compute_disp_stress_kernels_force(G,rcv,obs_plot);
+u1_bem_bulk = Disp_f*slip_bem;
+s12_bem_bulk = Stress_f(:,:,1)*slip_bem;
+s13_bem_bulk = Stress_f(:,:,2)*slip_bem;
+
+% make s12 discontinuous
+in = inpolygon(obs_plot(:,1),obs_plot(:,2),rcv.xc(:,1),rcv.xc(:,2));
+% s12_bem_bulk(in) = s12_bem_bulk(in) - G*source_strain;
+
+% compute u,σ using L&B 2016 solutions
+[Stress_12,~] = calc_stressgreensfunctions_antiplaneshz(G,...
+                        obs_plot(:,1) - (x0 + L_x/2),obs_plot(:,2),...
+                        y0,L_x,L_y);
+s12_shz_bulk = Stress_12(:,1).*source_strain;
+s13_shz_bulk = Stress_12(:,2).*source_strain;
+% calculate displacements
+[Disp_f] = calc_dispgreensfunctions_antiplaneshz(obs_plot(:,1) - (x0 + L_x/2),obs_plot(:,2),...
+                                               y0,L_x,L_y);
+u1_shz_bulk = Disp_f(:,1).*source_strain;
+
+figure(100),clf
+subplot(3,2,1)
+pcolor(x,y,reshape(u1_bem_bulk,ny,nx)), shading interp
+hold on
+plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
+axis tight equal
+colorbar
+clim([-1 1])
+xlabel('x'), ylabel('y')
+title('u_1 (BEM)')
+
+subplot(3,2,3)
+pcolor(x,y,reshape(s12_bem_bulk,ny,nx)), shading interp
+hold on
+plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
+axis tight equal
+clim([-1 1])
+colorbar
+xlabel('x'), ylabel('y')
+title('\sigma_{12} (BEM)')
+
+subplot(3,2,5)
+pcolor(x,y,reshape(s13_bem_bulk,ny,nx)), shading interp
+hold on
+plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
+axis tight equal
+clim([-1 1])
+colorbar
+xlabel('x'), ylabel('y')
+title('\sigma_{13} (BEM)')
+
+subplot(3,2,2)
+pcolor(x,y,reshape(u1_shz_bulk,ny,nx)), shading interp
+hold on
+plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
+axis tight equal
+colorbar
+clim([-1 1])
+xlabel('x'), ylabel('y')
+title('u_1 (L&B16)')
+
+subplot(3,2,4)
+pcolor(x,y,reshape(s12_shz_bulk,ny,nx)), shading interp
+hold on
+plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
+axis tight equal
+clim([-1 1])
+colorbar
+xlabel('x'), ylabel('y')
+title('\sigma_{12} (L&B16)')
+
+subplot(3,2,6)
+pcolor(x,y,reshape(s13_shz_bulk,ny,nx)), shading interp
+hold on
+plot([rcv.x1,rcv.x2],[rcv.y1,rcv.y2],'k.-')
+axis tight equal
+clim([-1 1])
+colorbar
+xlabel('x'), ylabel('y')
+title('\sigma_{13} (L&B16)')
+
+colormap bluewhitered(20)
+set(findobj(gcf,'type','axes'),'FontSize',15,'LineWidth', 1);
+
+
+
+
+
