@@ -97,7 +97,7 @@ BC(left|right) = BC_tau(left|right);
 BC(top|bot) = BC_tau(top|bot);
 
 % solve linear BEM problem
-source_bem = pinv(K)*BC;
+source_bem = K\BC;
 
 % modify slip_bem
 dv = 0;
