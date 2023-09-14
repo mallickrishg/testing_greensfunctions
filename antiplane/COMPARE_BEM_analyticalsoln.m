@@ -176,7 +176,7 @@ s13_bem_bulk = Stress_f(:,:,2)*slip_bem;
 
 % make s12 discontinuous
 in = inpolygon(obs_plot(:,1),obs_plot(:,2),rcv.xc(:,1),rcv.xc(:,2));
-% s12_bem_bulk(in) = s12_bem_bulk(in) - 2*G*source_strain;
+s12_bem_bulk(in) = s12_bem_bulk(in) - 2*G*source_strain;
 
 % compute u,σ using L&B 2016 solutions
 [Stress_12,~] = calc_stressgreensfunctions_antiplaneshz(G,...
