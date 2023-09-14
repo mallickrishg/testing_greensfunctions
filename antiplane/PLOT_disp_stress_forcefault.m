@@ -1,4 +1,5 @@
 clear
+addpath functions/
 
 u1 = @(x,y,a) (-4*a + ...
                 2.*x.*(atan2(2*a.*x,x.^2+y.^2-a^2)) +...
@@ -25,7 +26,7 @@ a = 1;
 
 % for a dipping source
 dip = 0;
-[uplot,s12plot,s13plot] = calc_disp_stress_pointforce(X(:),Y(:),a,dip);
+[uplot,s12plot,s13plot] = calc_disp_stress_forcefault(X(:),Y(:),a,dip);
 
 figure(1),clf
 pcolor(x,y,reshape(uplot,ny,nx)), shading interp
