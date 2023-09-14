@@ -25,16 +25,19 @@ obs = rcv.xc - rcv.nv.*1e-12;% -ve normal vector means outside the domain
 
 source_strain = 0.5;
 
-[Stress_12,~] = calc_stressgreensfunctions_antiplaneshz(G,...
+[Stress_12,Stress_13] = calc_stressgreensfunctions_antiplaneshz(G,...
                         obs(:,1) - (x0 + L_x/2),obs(:,2),...
                         y0,L_x,L_y);
-s12_shz = Stress_12(:,1).*source_strain;
-s13_shz = Stress_12(:,2).*source_strain;
+% s12_shz = Stress_12(:,1).*source_strain;
+% s13_shz = Stress_12(:,2).*source_strain;
+s12_shz = Stress_13(:,1).*source_strain;
+s13_shz = Stress_13(:,2).*source_strain;
 
 % calculate displacements
 [Disp_shz] = calc_dispgreensfunctions_antiplaneshz(obs(:,1) - (x0 + L_x/2),obs(:,2),...
                                                y0,L_x,L_y);
-u1_shz = Disp_shz(:,1).*source_strain;
+% u1_shz = Disp_shz(:,1).*source_strain;
+u1_shz = Disp_shz(:,2).*source_strain;
 
 figure(11),clf
 scatter(obs(:,1),obs(:,2),100,u1_shz,'o','filled','MarkerEdgeColor','k')
@@ -99,11 +102,13 @@ BC(top|bot) = BC_tau(top|bot);
 % solve linear BEM problem
 source_bem = K\BC;
 
-% modify slip_bem
-dv = 0;
-xv = (linspace(-1,1,length(source_bem(left)))');
-source_bem(left) = source_bem(left) + dv.*xv;
-source_bem(right) = source_bem(right) + dv.*xv;
+% % modify slip_bem
+% dv = 0;
+% xv = (linspace(-1,1,length(source_bem(left)))');
+% source_bem(left) = (source_bem(left) + dv.*xv).*0;
+% source_bem(right) = (source_bem(right) + dv.*xv).*0;
+% source_bem(top) = 1;
+% source_bem(bot) = -1;
 
 % plot BEM slip distribution
 figure(5),clf
@@ -193,15 +198,15 @@ in = inpolygon(obs_plot(:,1),obs_plot(:,2),rcv.xc(:,1),rcv.xc(:,2));
 % s12_bem_bulk(in) = s12_bem_bulk(in) - 2*G*source_strain;
 
 % compute u,σ using L&B 2016 solutions
-[Stress_12,~] = calc_stressgreensfunctions_antiplaneshz(G,...
+[Stress_12,Stress_13] = calc_stressgreensfunctions_antiplaneshz(G,...
                         obs_plot(:,1) - (x0 + L_x/2),obs_plot(:,2),...
                         y0,L_x,L_y);
-s12_shz_bulk = Stress_12(:,1).*source_strain;
-s13_shz_bulk = Stress_12(:,2).*source_strain;
+s12_shz_bulk = Stress_13(:,1).*source_strain;
+s13_shz_bulk = Stress_13(:,2).*source_strain;
 % calculate displacements
 [Disp_f] = calc_dispgreensfunctions_antiplaneshz(obs_plot(:,1) - (x0 + L_x/2),obs_plot(:,2),...
                                                y0,L_x,L_y);
-u1_shz_bulk = Disp_f(:,1).*source_strain;
+u1_shz_bulk = Disp_f(:,2).*source_strain;
 
 figure(100),clf
 subplot(3,2,1)
