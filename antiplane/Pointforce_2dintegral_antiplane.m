@@ -13,10 +13,14 @@ mu = 1;
 % 1 - xy grid
 eval_type = 1;
 
-nx = 120;
-ny = 80;
+% rectangle domain
+rectangle_x = 0.5;
+rectangle_y = 1.5;
 
-x_vec = linspace(-3, 3, nx);
+nx = 100;
+ny = 50;
+
+x_vec = linspace(-4, 4, nx);
 y_vec = linspace(-2, 2, ny);
 
 if eval_type == 1
@@ -24,13 +28,12 @@ if eval_type == 1
     [x_mat, y_mat] = meshgrid(x_vec, y_vec);
 else
     % only evluate function along a line at y=0
-    x_mat = x_vec;
-    y_mat = x_vec.*0;
+    % x_mat = x_vec;
+    % y_mat = x_vec.*0;
+    rcv = construct_box(-rectangle_x/2,-rectangle_y/2,rectangle_x,rectangle_y,rectangle_y/nx); 
+    x_mat = rcv.xc(:,1);
+    y_mat = rcv.xc(:,2);
 end
-%% rectangle domain
-
-rectangle_x = 1;
-rectangle_y = 1;
 
 %% numerical integration (with matlab integral)
 
@@ -52,19 +55,19 @@ parfor k=1:numel(x_mat)
     fun_s12 = @(x0,y0) pointforce_s12(x_mat(k),y_mat(k),x0,y0);
     fun_s13 = @(x0,y0) pointforce_s13(x_mat(k),y_mat(k),x0,y0);
     
-    % % rectangle source
-    % u1(k) = integral2(fun_u,-Rx/2,Rx/2,-Ry/2,Ry/2)./area_source;
-    % s12(k) = mu.*integral2(fun_s12,-Rx/2,Rx/2,-Ry/2,Ry/2)./area_source;
-    % s13(k) = mu.*integral2(fun_s13,-Rx/2,Rx/2,-Ry/2,Ry/2)./area_source;
+    % rectangle source
+    u1(k) = integral2(fun_u,-Rx/2,Rx/2,-Ry/2,Ry/2)./area_source;
+    s12(k) = mu.*integral2(fun_s12,-Rx/2,Rx/2,-Ry/2,Ry/2)./area_source;
+    s13(k) = mu.*integral2(fun_s13,-Rx/2,Rx/2,-Ry/2,Ry/2)./area_source;
 
     % triangle source
     % u1(k) = integral2(@(x0,y0) fun_u(x_mat(k),y_mat(k),x0,y0),0,Rx,-Ry,ymax)./area_source;
     % s12(k) = mu.*integral2(@(x0,y0) fun_s12(x_mat(k),y_mat(k),x0,y0),0,Rx,-Ry,ymax)./area_source;
     % s13(k) = mu.*integral2(@(x0,y0) fun_s13(x_mat(k),y_mat(k),x0,y0),0,Rx,-Ry,ymax)./area_source;
 
-    u1(k) = integral2(fun_u,0,Rx,-Ry,ymax)./area_source;
-    s12(k) = mu.*integral2(fun_s12,0,Rx,-Ry,ymax)./area_source;
-    s13(k) = mu.*integral2(fun_s13,0,Rx,-Ry,ymax)./area_source;
+    % u1(k) = integral2(fun_u,0,Rx,-Ry,ymax)./area_source;
+    % s12(k) = mu.*integral2(fun_s12,0,Rx,-Ry,ymax)./area_source;
+    % s13(k) = mu.*integral2(fun_s13,0,Rx,-Ry,ymax)./area_source;
 
 end
 toc
@@ -72,13 +75,13 @@ toc
 %% plot results
 
 if eval_type == 1
-    figure(1),clf
+    figure(21),clf
     pcolor(x_mat,y_mat,reshape(abs(u1(:)),ny,nx)),shading interp
     axis tight equal
     colorbar
     colormap('sky(10)')
 
-    figure(2),clf
+    figure(22),clf
     subplot(211)
     pcolor(x_mat,y_mat,reshape(s12(:),ny,nx)),shading interp
     hold on
@@ -100,14 +103,17 @@ if eval_type == 1
     set(gca,'Fontsize',15,'LineWidth',1)
     % print('force2d_antiplane','-djpeg','-r200')
 else
-    figure(1),clf
+    figure(31),clf
     subplot(2,1,1)
-    plot(x_vec,u1,'linewidth',2)
+    plot(u1,'linewidth',2)
     axis tight
+    xlabel('node'),ylabel('u_1')
     subplot(2,1,2)
-    plot(x_vec,s12,'LineWidth',2), hold on
-    plot(x_vec,s13,'LineWidth',2)
+    plot(s12,'LineWidth',2), hold on
+    plot(s13,'LineWidth',2)
     axis tight
+    legend('\sigma_{12}','\sigma_{13}')
+    ylabel('Stress component'),xlabel('node')
 end
 
 
