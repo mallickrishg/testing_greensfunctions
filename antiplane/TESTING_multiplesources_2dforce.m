@@ -8,10 +8,10 @@ mu = 1;
 eval_type = 1;
 
 % specify location and dimensions of cources
-source_strength = [1,-1]*2;
-xloc = [-0.5,0.5].*1;
+source_strength = [1,-0]*5;
+xloc = [-0.5,0.5].*2;
 yloc = [0,0];
-rectangle_x = [1,1].*1;
+rectangle_x = [1,1].*0.2;
 rectangle_y = [1.5,1.5];
 
 
@@ -70,11 +70,11 @@ toc
 
 if eval_type == 1
     figure(21),clf
-    pcolor(x_mat,y_mat,reshape(abs(u1(:)),ny,nx)),shading interp
+    pcolor(x_mat,y_mat,reshape((u1(:)),ny,nx)),shading interp
     axis tight equal
     colorbar
-    clim([0 0.5])
-    colormap('sky(10)')
+    clim([-1 1]*0.5)
+    colormap('bluewhitered(20)')
 
     figure(22),clf
     subplot(211)
