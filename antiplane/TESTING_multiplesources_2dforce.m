@@ -8,15 +8,15 @@ mu = 1;
 eval_type = 1;
 
 % specify location and dimensions of cources
-source_strength = [1,-0]*5;
-xloc = [-0.5,0.5].*2;
-yloc = [0,0];
-rectangle_x = [1,1].*0.2;
-rectangle_y = [1.5,1.5];
+source_strength = [1,0.0,0,-0.0,-1]*2;
+xloc = [-1,-0.5,0,0.5,1].*1;
+yloc = zeros(size(source_strength));
+rectangle_x = ones(size(source_strength)).*0.5;
+rectangle_y = ones(size(source_strength)).*2;
 
 
-nx = 100;
-ny = 50;
+nx = 200;
+ny = nx/2;
 
 x_vec = linspace(-4, 4, nx);
 y_vec = linspace(-2, 2, ny);
@@ -70,30 +70,54 @@ toc
 
 if eval_type == 1
     figure(21),clf
-    pcolor(x_mat,y_mat,reshape((u1(:)),ny,nx)),shading interp
+    pcolor(x_mat,y_mat,reshape((u1(:)),ny,nx)),shading interp, hold on
+    contour(x_mat,y_mat,reshape(u1(:),ny,nx),(-1:0.1:1).*0.5,'k-')
+    for i = 1:length(rectangle_x)
+        xplot = [xloc(i)-rectangle_x(i)/2;xloc(i)+rectangle_x(i)/2;...
+            xloc(i)+rectangle_x(i)/2;xloc(i)-rectangle_x(i)/2;xloc(i)-rectangle_x(i)/2];
+        yplot = [yloc(i)-rectangle_y(i)/2;yloc(i)-rectangle_y(i)/2;...
+            yloc(i)+rectangle_y(i)/2;yloc(i)+rectangle_y(i)/2;yloc(i)-rectangle_y(i)/2];
+        plot(xplot,yplot,'k-','LineWidth',1)
+    end
     axis tight equal
     colorbar
     clim([-1 1]*0.5)
     colormap('bluewhitered(20)')
+    set(gca,'Fontsize',15,'LineWidth',1,'TickDir','both')
 
     figure(22),clf
     subplot(211)
     pcolor(x_mat,y_mat,reshape(s12(:),ny,nx)),shading interp
     hold on
-    contour(x_mat,y_mat,reshape(s12(:),ny,nx),[-0.5:0.1:0.5],'k-')
+    contour(x_mat,y_mat,reshape(s12(:),ny,nx),-0.5:0.05:0.5,'k-')
+    for i = 1:length(rectangle_x)
+        xplot = [xloc(i)-rectangle_x(i)/2;xloc(i)+rectangle_x(i)/2;...
+            xloc(i)+rectangle_x(i)/2;xloc(i)-rectangle_x(i)/2;xloc(i)-rectangle_x(i)/2];
+        yplot = [yloc(i)-rectangle_y(i)/2;yloc(i)-rectangle_y(i)/2;...
+            yloc(i)+rectangle_y(i)/2;yloc(i)+rectangle_y(i)/2;yloc(i)-rectangle_y(i)/2];
+        plot(xplot,yplot,'w-','LineWidth',.1)
+    end
     axis tight equal
     cb=colorbar;cb.Label.String = '\sigma_{xz}';
-    set(gca,'Fontsize',15,'LineWidth',1)
+    set(gca,'Fontsize',15,'LineWidth',1,'TickDir','both')
     clim([-1 1]*0.5)
+
     subplot(212)
     pcolor(x_mat,y_mat,reshape(s13(:),ny,nx)),shading interp
     hold on
-    contour(x_mat,y_mat,reshape(s13(:),ny,nx),[-0.5:0.1:0.5],'k-')
+    contour(x_mat,y_mat,reshape(s13(:),ny,nx),-0.5:0.05:0.5,'k-')
+    for i = 1:length(rectangle_x)
+        xplot = [xloc(i)-rectangle_x(i)/2;xloc(i)+rectangle_x(i)/2;...
+            xloc(i)+rectangle_x(i)/2;xloc(i)-rectangle_x(i)/2;xloc(i)-rectangle_x(i)/2];
+        yplot = [yloc(i)-rectangle_y(i)/2;yloc(i)-rectangle_y(i)/2;...
+            yloc(i)+rectangle_y(i)/2;yloc(i)+rectangle_y(i)/2;yloc(i)-rectangle_y(i)/2];
+        plot(xplot,yplot,'w-','LineWidth',.1)
+    end
     axis tight equal
     cb=colorbar;cb.Label.String = '\sigma_{yz}';
     clim([-1 1]*0.5)
-    colormap('turbo(1000)')
-    set(gca,'Fontsize',15,'LineWidth',1)
+    colormap('turbo(20)')
+    set(gca,'Fontsize',15,'LineWidth',1,'TickDir','both')
 else
     figure(31),clf
     subplot(2,1,1)
