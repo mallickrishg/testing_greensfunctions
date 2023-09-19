@@ -5,7 +5,7 @@ addpath functions/
 G = 1;
 % construct mesh for cuboid boundary
 % bottom left corner
-x0 = -0.5;
+x0 = -1;
 y0 = -1.5;
 
 % dimensions of box
@@ -28,16 +28,16 @@ source_strain = 0.5;
 [Stress_12,Stress_13] = calc_stressgreensfunctions_antiplaneshz(G,...
                         obs(:,1) - (x0 + L_x/2),obs(:,2),...
                         y0,L_x,L_y);
-% s12_shz = Stress_12(:,1).*source_strain;
-% s13_shz = Stress_12(:,2).*source_strain;
-s12_shz = Stress_13(:,1).*source_strain;
-s13_shz = Stress_13(:,2).*source_strain;
+s12_shz = Stress_12(:,1).*source_strain;
+s13_shz = Stress_12(:,2).*source_strain;
+% s12_shz = Stress_13(:,1).*source_strain;
+% s13_shz = Stress_13(:,2).*source_strain;
 
 % calculate displacements
 [Disp_shz] = calc_dispgreensfunctions_antiplaneshz(obs(:,1) - (x0 + L_x/2),obs(:,2),...
                                                y0,L_x,L_y);
-% u1_shz = Disp_shz(:,1).*source_strain;
-u1_shz = Disp_shz(:,2).*source_strain;
+u1_shz = Disp_shz(:,1).*source_strain;
+% u1_shz = Disp_shz(:,2).*source_strain;
 
 figure(11),clf
 scatter(obs(:,1),obs(:,2),100,u1_shz,'o','filled','MarkerEdgeColor','k')
@@ -95,7 +95,7 @@ K(top,:) = Tau_f(top,:);
 % specify right-hand side of BVP
 BC = zeros(rcv.N,1);
 BC_tau = s12_shz.*rcv.nv(:,1) + s13_shz.*rcv.nv(:,2);
-BC_disp = u1_shz;
+% BC_disp = u1_shz;
 BC(left|right) = BC_tau(left|right);
 BC(top|bot) = BC_tau(top|bot);
 
@@ -163,7 +163,7 @@ ylim([0 max(get(gca,'YLim'))])
 figure(20),clf
 subplot(311)
 plot(u1_shz,'o-'), hold on
-plot(Disp_f*source_bem,'r.-')
+plot(u1_bem,'r.-')
 legend('L&B16','bem')
 ylabel('u_1'), xlabel('node')
 
@@ -195,18 +195,18 @@ s13_bem_bulk = Stress_f(:,:,2)*source_bem;
 
 % make s12 discontinuous
 in = inpolygon(obs_plot(:,1),obs_plot(:,2),rcv.xc(:,1),rcv.xc(:,2));
-% s12_bem_bulk(in) = s12_bem_bulk(in) - 2*G*source_strain;
+s12_bem_bulk(in) = s12_bem_bulk(in) - 2*G*source_strain;
 
 % compute u,σ using L&B 2016 solutions
 [Stress_12,Stress_13] = calc_stressgreensfunctions_antiplaneshz(G,...
                         obs_plot(:,1) - (x0 + L_x/2),obs_plot(:,2),...
                         y0,L_x,L_y);
-s12_shz_bulk = Stress_13(:,1).*source_strain;
-s13_shz_bulk = Stress_13(:,2).*source_strain;
+s12_shz_bulk = Stress_12(:,1).*source_strain;
+s13_shz_bulk = Stress_12(:,2).*source_strain;
 % calculate displacements
 [Disp_f] = calc_dispgreensfunctions_antiplaneshz(obs_plot(:,1) - (x0 + L_x/2),obs_plot(:,2),...
                                                y0,L_x,L_y);
-u1_shz_bulk = Disp_f(:,2).*source_strain;
+u1_shz_bulk = Disp_f(:,1).*source_strain;
 
 figure(100),clf
 subplot(3,2,1)

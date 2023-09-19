@@ -8,14 +8,14 @@ mu = 1;
 eval_type = 1;
 
 % specify location and dimensions of cources
-source_strength = [1,0.0,0,-0.0,-1]*2;
-xloc = [-1,-0.5,0,0.5,1].*1;
+source_strength = [1,0.0,0,-0.0,-1]*1;
+xloc = [-1,-0.5,0,0.5,1].*1.5;
 yloc = zeros(size(source_strength));
-rectangle_x = ones(size(source_strength)).*0.5;
-rectangle_y = ones(size(source_strength)).*2;
+rectangle_x = ones(size(source_strength)).*0.75;
+rectangle_y = ones(size(source_strength)).*1.5;
 
 
-nx = 200;
+nx = 100;
 ny = nx/2;
 
 x_vec = linspace(-4, 4, nx);
