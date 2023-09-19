@@ -1,4 +1,6 @@
-%% Set model parameters 
+clear
+
+% Set model parameters 
 % Elasticity parameters
 mu = 1;
 
