@@ -30,9 +30,12 @@ toc
 [Kru1,Krs12,Krs13] = calc_disp_stress_forcefault(x_mat(:)-(xloc+Rx),y_mat(:)-yloc,Ry,90);
 
 %% compute resulting displacement and stresses
+% TODO - outputs need to be split for alpha_0 terms and alpha_1 terms
+
 u1 = Lu1(:).*alpha_1 - Kru1.*(alpha_0 + alpha_1*Rx) + Klu1.*(alpha_0-alpha_1*Rx);
 s12 = Ls12(:).*alpha_1 - Krs12.*(alpha_0 + alpha_1*Rx) + Kls12.*(alpha_0-alpha_1*Rx);
 s13 = Ls13(:).*alpha_1 - Krs13.*(alpha_0 + alpha_1*Rx) + Kls13.*(alpha_0-alpha_1*Rx);
+
 
 end
 

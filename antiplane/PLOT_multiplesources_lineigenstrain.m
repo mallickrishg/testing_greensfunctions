@@ -24,5 +24,8 @@ x_vec = linspace(-4, 4, nx);
 y_vec = linspace(-4, 4, ny);
 [x_mat, y_mat] = meshgrid(x_vec, y_vec);
 
-% compute displacement and stress
-[u1,s12,s13] = calc_disp_stress_lineigenstrain(x_mat(:),y_mat(:),xloc,yloc,Rx,Ry,[alpha_0,alpha_1]);
+%% compute displacement and stress
+
+for i = 1:Nsources
+    [u1,s12,s13] = calc_disp_stress_lineigenstrain(x_mat(:),y_mat(:),xloc,yloc,Rx,Ry,[alpha_0,alpha_1]);
+end
