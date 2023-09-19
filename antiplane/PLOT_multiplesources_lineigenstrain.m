@@ -19,7 +19,7 @@ Rx = ones(Nsources,1).*1;
 Ry = ones(Nsources,1).*1.5;
 
 % discretize evaluation points
-nx = 200;
+nx = 100;
 ny = nx;
 
 x_vec = linspace(-4, 4, nx);
@@ -41,8 +41,8 @@ end
 
 %% plot displacement and stresses
 
-alpha0_vec = [1,1];
-alpha1_vec = [1,-1];
+alpha0_vec = [1,2];
+alpha1_vec = [1,0];
 sources = [alpha0_vec;alpha1_vec];
 
 % use tensor products to contract 3-d matrices
