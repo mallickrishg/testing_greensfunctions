@@ -19,10 +19,10 @@ alpha_1 = 0;
 xloc = 0;
 yloc = 0;
 Rx = 1;
-Ry = 2;
+Ry = 1.5;
 
 %% discretize evaluation points
-nx = 80;
+nx = 100;
 ny = nx;
 
 x_vec = linspace(-4, 4, nx);
@@ -60,9 +60,10 @@ s13 = Ls13(:).*alpha_1 - Krs13.*(alpha_0 + alpha_1*Rx) + Kls13.*(alpha_0-alpha_1
 
 figure(1),clf
 pcolor(x_vec,y_vec,reshape(u1,ny,nx)), shading interp, hold on
-contour(x_vec,y_vec,reshape(u1,ny,nx),19,'k-')
+contour(x_vec,y_vec,reshape(u1,ny,nx),linspace(-1,1,21).*max(abs(u1(:))),'k-')
 axis tight equal
 colorbar
+clim([-1 1].*max(abs(u1(:))))
 colormap bluewhitered(20)
 
 figure(2),clf
