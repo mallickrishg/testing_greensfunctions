@@ -12,7 +12,7 @@ mu = 1;
 
 % source strength terms (alpha_0 + alpha_1*x)
 alpha_0 = 1;
-alpha_1 = 0;
+alpha_1 = 1;
 
 % dimensions of source
 % specify location and dimensions of cources
