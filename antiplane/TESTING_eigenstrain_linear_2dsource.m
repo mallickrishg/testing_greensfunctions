@@ -22,7 +22,7 @@ Rx = 1;
 Ry = 2;
 
 %% discretize evaluation points
-nx = 50;
+nx = 80;
 ny = nx;
 
 x_vec = linspace(-4, 4, nx);
@@ -55,12 +55,31 @@ toc
 
 %% compute resulting displacement and stresses
 u1 = Lu1(:).*alpha_1 - Kru1.*(alpha_0 + alpha_1*Rx) + Klu1.*(alpha_0-alpha_1*Rx);
+s12 = Ls12(:).*alpha_1 - Krs12.*(alpha_0 + alpha_1*Rx) + Kls12.*(alpha_0-alpha_1*Rx);
+s13 = Ls13(:).*alpha_1 - Krs13.*(alpha_0 + alpha_1*Rx) + Kls13.*(alpha_0-alpha_1*Rx);
 
 figure(1),clf
 pcolor(x_vec,y_vec,reshape(u1,ny,nx)), shading interp, hold on
 contour(x_vec,y_vec,reshape(u1,ny,nx),19,'k-')
 axis tight equal
 colorbar
+colormap bluewhitered(20)
+
+figure(2),clf
+subplot(2,1,1)
+pcolor(x_vec,y_vec,reshape(s12,ny,nx)), shading interp, hold on
+contour(x_vec,y_vec,reshape(s12,ny,nx),linspace(-1,1,21).*max(abs(s12(:))),'k-')
+axis tight equal
+clim([-1 1].*max(abs(s12(:))))
+colorbar
+
+subplot(2,1,2)
+pcolor(x_vec,y_vec,reshape(s13,ny,nx)), shading interp, hold on
+contour(x_vec,y_vec,reshape(s13,ny,nx),linspace(-1,1,21).*max(abs(s13(:))),'k-')
+axis tight equal
+clim([-1 1].*max(abs(s13(:))))
+colorbar
+
 colormap bluewhitered(20)
 
 %% define function
