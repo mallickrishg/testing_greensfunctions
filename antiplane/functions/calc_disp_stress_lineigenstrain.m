@@ -1,6 +1,6 @@
 function [u1,s12,s13] = calc_disp_stress_lineigenstrain(x_mat,y_mat,xloc,yloc,Rx,Ry,alpha)
 % compute displacement and stress in response to a spatially variable eigen
-% strain source (alpha_0 + alpha_1*x).
+% strain source (alpha_0 + alpha_1*x) as [N x 2] matrices
 % INPUTS:
 % x_mat,y_mat - observation points: each variable as a (N x 1) vector
 % xloc,yloc - location of rectangle center
