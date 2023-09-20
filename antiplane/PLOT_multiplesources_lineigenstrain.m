@@ -7,13 +7,13 @@ addpath functions/
 mu = 1;
 
 % source strength terms (alpha_0 + alpha_1*x)
-Nsources = 2;
+Nsources = 3;
 alpha_0 = 1;
 alpha_1 = 1;
 
 % dimensions of source
 % specify location and dimensions of cources
-xloc = [-1,1]*1;
+xloc = [-2,0,2]*1;
 yloc = ones(Nsources,1).*0;
 Rx = ones(Nsources,1).*1;
 Ry = ones(Nsources,1).*1.5;
@@ -41,8 +41,8 @@ end
 
 %% plot displacement and stresses
 
-alpha0_vec = [1,2];
-alpha1_vec = [1,0];
+alpha0_vec = [1,3,2];
+alpha1_vec = [1,1,-2];
 sources = [alpha0_vec;alpha1_vec];
 
 % use tensor products to contract 3-d matrices
@@ -77,6 +77,6 @@ colormap bluewhitered(1000)
 
 figure(11),clf
 toplot = reshape(u1,ny,nx);
-plot(x_vec,toplot(ny/2,:),'.-','LineWidth',2)
+plot(x_vec,toplot(ny/2,:),'-','LineWidth',2)
 axis tight, grid on
 xlabel('x'), ylabel('u_1')
