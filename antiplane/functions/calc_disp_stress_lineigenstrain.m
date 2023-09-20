@@ -1,12 +1,22 @@
 function [u1,s12,s13] = calc_disp_stress_lineigenstrain(x_mat,y_mat,xloc,yloc,Rx,Ry,alpha)
 % compute displacement and stress in response to a spatially variable eigen
 % strain source (alpha_0 + alpha_1*x).
+% INPUTS:
+% x_mat,y_mat - observation points: each variable as a (N x 1) vector
+% xloc,yloc - location of rectangle center
+% Rx,Ry - x & y dimensions of half-width i.e, source is -Rx<=x<=Rx,-Ry<=y<=Ry
+% alpha - source terms, where alpha(1) = alpha_0, alpha(2) = alpha_1
+% OUTPUTS:
+% u1 - displacement kernel as [u(alpha_0) , u(alpha_1)] matrix
+% s12,s13 - stress kernels as [N x 2] matrices each
+% 
+% Rishav Mallick, 2023, Caltech Seismolab
 
 % source strength terms (alpha_0 + alpha_1*x)
 alpha_0 = alpha(1);
 alpha_1 = alpha(2);
 
-%% numerical integration (with matlab integral)
+%% numerical integration (with matlab integral2)
 Lu1 = zeros(size(x_mat));
 Ls12 = zeros(size(x_mat));
 Ls13 = zeros(size(x_mat));
@@ -30,11 +40,6 @@ toc
 [Kru1,Krs12,Krs13] = calc_disp_stress_forcefault(x_mat(:)-(xloc+Rx),y_mat(:)-yloc,Ry,90);
 
 %% compute resulting displacement and stresses
-% TODO - outputs need to be split for alpha_0 terms and alpha_1 terms
-
-% u1 = Lu1(:).*alpha_1 - Kru1.*(alpha_0 + alpha_1*Rx) + Klu1.*(alpha_0-alpha_1*Rx);
-% s12 = Ls12(:).*alpha_1 - Krs12.*(alpha_0 + alpha_1*Rx) + Kls12.*(alpha_0-alpha_1*Rx);
-% s13 = Ls13(:).*alpha_1 - Krs13.*(alpha_0 + alpha_1*Rx) + Kls13.*(alpha_0-alpha_1*Rx);
 
 u1 = [(Klu1-Kru1).*alpha_0 , (Lu1(:)-Kru1.*Rx-Klu1.*Rx).*alpha_1];
 s12 = [(Kls12-Krs12).*alpha_0 , (Ls12(:)-Krs12.*Rx-Kls12.*Rx).*alpha_1];
