@@ -53,25 +53,52 @@ s13 = tensorprod(Ks13,sources,[2 3],[1 2]);
 figure(1),clf
 pcolor(x_vec,y_vec,reshape(u1,ny,nx)), shading interp, hold on
 contour(x_vec,y_vec,reshape(u1,ny,nx),linspace(-1,1,11).*max(abs(u1(:))),'k-')
+for i = 1:Nsources
+    xplot = [xloc(i)-Rx(i);xloc(i)+Rx(i);...
+        xloc(i)+Rx(i);xloc(i)-Rx(i);xloc(i)-Rx(i)];
+    yplot = [yloc(i)-Ry(i);yloc(i)-Ry(i);...
+        yloc(i)+Ry(i);yloc(i)+Ry(i);yloc(i)-Ry(i)];
+    plot(xplot,yplot,'w-','LineWidth',1)
+end
 axis tight equal
-cb=colorbar; cb.Location='northoutside';
+cb=colorbar; cb.Location='northoutside';cb.Label.String='u';
 clim([-1 1].*max(abs(u1(:))))
 colormap bluewhitered(1000)
+xlabel('x'),ylabel('y')
+set(gca,'FontSize',15,'LineWidth',1.5,'TickDir','Both')
 
 figure(2),clf
 subplot(1,2,1)
 pcolor(x_vec,y_vec,reshape(s12,ny,nx)), shading interp, hold on
 contour(x_vec,y_vec,reshape(s12,ny,nx),linspace(-1,1,21).*max(abs(s12(:))),'k-')
+for i = 1:Nsources
+    xplot = [xloc(i)-Rx(i);xloc(i)+Rx(i);...
+        xloc(i)+Rx(i);xloc(i)-Rx(i);xloc(i)-Rx(i)];
+    yplot = [yloc(i)-Ry(i);yloc(i)-Ry(i);...
+        yloc(i)+Ry(i);yloc(i)+Ry(i);yloc(i)-Ry(i)];
+    plot(xplot,yplot,'w-','LineWidth',1)
+end
 axis tight equal
 clim([-1 1].*max(abs(s12(:))))
-colorbar
+cb=colorbar; cb.Location='northoutside';cb.Label.String='\sigma_{zx}';
+xlabel('x'),ylabel('y')
+set(gca,'FontSize',15,'LineWidth',1.5,'TickDir','Both')
 
 subplot(1,2,2)
 pcolor(x_vec,y_vec,reshape(s13,ny,nx)), shading interp, hold on
 contour(x_vec,y_vec,reshape(s13,ny,nx),linspace(-1,1,21).*max(abs(s13(:))),'k-')
+for i = 1:Nsources
+    xplot = [xloc(i)-Rx(i);xloc(i)+Rx(i);...
+        xloc(i)+Rx(i);xloc(i)-Rx(i);xloc(i)-Rx(i)];
+    yplot = [yloc(i)-Ry(i);yloc(i)-Ry(i);...
+        yloc(i)+Ry(i);yloc(i)+Ry(i);yloc(i)-Ry(i)];
+    plot(xplot,yplot,'w-','LineWidth',1)
+end
 axis tight equal
 clim([-1 1].*max(abs(s13(:))))
-colorbar
+cb=colorbar; cb.Location='northoutside';cb.Label.String='\sigma_{zy}';
+xlabel('x'),ylabel('y')
+set(gca,'FontSize',15,'LineWidth',1.5,'TickDir','Both')
 
 colormap bluewhitered(1000)
 
@@ -79,4 +106,5 @@ figure(11),clf
 toplot = reshape(u1,ny,nx);
 plot(x_vec,toplot(ny/2,:),'-','LineWidth',2)
 axis tight, grid on
-xlabel('x'), ylabel('u_1')
+xlabel('x'), ylabel('u')
+set(gca,'FontSize',15,'LineWidth',1.5,'TickDir','Both')
