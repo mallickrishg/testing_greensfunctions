@@ -17,6 +17,7 @@ alpha_2 = 1;
 xloc = ones(Nsources,1).*0;
 yloc = [2,0,-2];
 w = ones(Nsources,1).*1;
+dip = 90.*ones(Nsources,1);
 
 % discretize evaluation points
 nx = 500;
@@ -34,7 +35,7 @@ Ks13 = zeros(nx*ny,3,Nsources);
 tic
 for i = 1:Nsources
     [u1,s12,s13] = calc_disp_stress_quadfault(x_mat(:),y_mat(:),...
-        xloc(i),yloc(i),w(i),[alpha_0,alpha_1,alpha_2]);
+        xloc(i),yloc(i),w(i),[alpha_0,alpha_1,alpha_2],dip(i));
     Ku(:,:,i) = u1;
     Ks12(:,:,i) = s12;
     Ks13(:,:,i) = s13;
@@ -51,6 +52,10 @@ toc
 alpha0_vec = [1,6,1];
 alpha1_vec = [-2,0,2];
 alpha2_vec = [1,-2,1];
+% alpha0_vec = [1,0,-1];
+% alpha1_vec = [0,0,0];
+% alpha2_vec = -[1,0,-1];
+
 sources = [alpha0_vec;alpha1_vec;alpha2_vec].*0.5;
 
 % use tensor products to contract 3-d matrices
