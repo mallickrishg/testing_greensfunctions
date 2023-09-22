@@ -48,10 +48,10 @@ toc
 % sources = [alpha0_vec;alpha1_vec];
 
 % for quadratic slip elements
-alpha0_vec = [1,2,0];
-alpha1_vec = [0,0,0];
-alpha2_vec = [1,0,0];
-sources = [alpha0_vec;alpha1_vec;alpha2_vec];
+alpha0_vec = [1,6,1];
+alpha1_vec = [-2,0,2];
+alpha2_vec = [1,-2,1];
+sources = [alpha0_vec;alpha1_vec;alpha2_vec].*0.5;
 
 % use tensor products to contract 3-d matrices
 u1 = tensorprod(Ku,sources,[2 3],[1 2]);
@@ -73,7 +73,9 @@ contour(x_vec,y_vec,reshape(s12,ny,nx),linspace(-1,1,21).*max(abs(s12(:))),'k-')
 axis tight equal
 % clim([-1 1].*max(abs(s12(:))))
 clim([-1 1].*1)
-colorbar
+cb=colorbar;cb.Label.String = '\sigma_{12}';cb.Location='northoutside';
+xlabel('x'), ylabel('y')
+set(gca,'FontSize',15,'LineWidth',1.5)
 
 subplot(1,2,2)
 pcolor(x_vec,y_vec,reshape(s13,ny,nx)), shading interp, hold on
@@ -81,21 +83,26 @@ contour(x_vec,y_vec,reshape(s13,ny,nx),linspace(-1,1,21).*max(abs(s13(:))),'k-')
 axis tight equal
 % clim([-1 1].*max(abs(s13(:))))
 clim([-1 1].*1)
-colorbar
-
+cb=colorbar;cb.Label.String = '\sigma_{13}';cb.Location='northoutside';
+xlabel('x'), ylabel('y')
+set(gca,'FontSize',15,'LineWidth',1.5)
 colormap bluewhitered(1000)
 
 figure(3),clf
 subplot(2,1,1)
 toplot = reshape(u1,ny,nx);
-plot(-toplot(:,nx/2)+toplot(:,nx/2+1),y_vec,'-','LineWidth',2)
-axis tight, grid on, box on
+plot(-toplot(:,nx/2)+toplot(:,nx/2+1),y_vec,'-','LineWidth',3)
+grid on, box on
+xlabel('slip'), ylabel('y')
+set(gca,'FontSize',15,'LineWidth',1.5)
 subplot(2,1,2)
 toplot = reshape(s12,ny,nx);
-plot(toplot(:,nx/2),y_vec,'-','LineWidth',2), hold on
+plot(toplot(:,nx/2),y_vec,'-','LineWidth',3), hold on
 toplot = reshape(s13,ny,nx);
-plot(toplot(:,nx/2),y_vec,'-','LineWidth',2)
+plot(toplot(:,nx/2),y_vec,'-','LineWidth',3)
 axis tight
 grid on, box on
-
+xlim([-1 1].*max(abs(get(gca,'XLim'))))
+xlabel('\Delta\tau'), ylabel('y')
+set(gca,'FontSize',15,'LineWidth',1.5)
 
