@@ -10,6 +10,7 @@ mu = 1;
 Nsources = 3;
 alpha_0 = 1;
 alpha_1 = 1;
+alpha_2 = 1;
 
 % dimensions of source
 % specify location and dimensions of cources
@@ -26,23 +27,31 @@ y_vec = linspace(-4, 4, ny);
 [x_mat, y_mat] = meshgrid(x_vec, y_vec);
 
 %% compute displacement and stress
-Ku = zeros(nx*ny,2,Nsources);
-Ks12 = zeros(nx*ny,2,Nsources);
-Ks13 = zeros(nx*ny,2,Nsources);
+Ku = zeros(nx*ny,3,Nsources);
+Ks12 = zeros(nx*ny,3,Nsources);
+Ks13 = zeros(nx*ny,3,Nsources);
 
+tic
 for i = 1:Nsources
-    [u1,s12,s13] = calc_disp_stress_linfault(x_mat(:),y_mat(:),...
-        xloc(i),yloc(i),w(i),[alpha_0,alpha_1]);
+    [u1,s12,s13] = calc_disp_stress_quadfault(x_mat(:),y_mat(:),...
+        xloc(i),yloc(i),w(i),[alpha_0,alpha_1,alpha_2]);
     Ku(:,:,i) = u1;
     Ks12(:,:,i) = s12;
     Ks13(:,:,i) = s13;
 end
-
+toc
 %% plot displacement and stresses
 
-alpha0_vec = [1,1.75,0.75];
-alpha1_vec = [-1,0.25,0.75];
-sources = [alpha0_vec;alpha1_vec];
+% % for linear slip elements
+% alpha0_vec = [1,1.75,0.75];
+% alpha1_vec = [-1,0.25,0.75];
+% sources = [alpha0_vec;alpha1_vec];
+
+% for quadratic slip elements
+alpha0_vec = [1,2,0];
+alpha1_vec = [0,0,0];
+alpha2_vec = [1,0,0];
+sources = [alpha0_vec;alpha1_vec;alpha2_vec];
 
 % use tensor products to contract 3-d matrices
 u1 = tensorprod(Ku,sources,[2 3],[1 2]);
