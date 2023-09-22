@@ -41,8 +41,10 @@ end
 
 %% plot displacement and stresses
 
-alpha0_vec = [1,3,2];
-alpha1_vec = [1,1,-2];
+% alpha0_vec = [1,3,2];
+% alpha1_vec = [1,1,-2];
+alpha0_vec = [0,1,0];
+alpha1_vec = [0,0,0];
 sources = [alpha0_vec;alpha1_vec];
 
 % use tensor products to contract 3-d matrices
