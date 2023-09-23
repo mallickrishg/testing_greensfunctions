@@ -13,10 +13,11 @@ alpha_1 = 1;
 alpha_2 = 1;
 
 % dimensions of source
-% specify location and dimensions of cources
+% specify location and dimensions of sources
+w = ones(Nsources,1).*1;
 xloc = ones(Nsources,1).*0;
 yloc = [2,0,-2];
-w = ones(Nsources,1).*1;
+
 dip = 90.*ones(Nsources,1);
 
 % discretize evaluation points
@@ -24,7 +25,7 @@ nx = 500;
 ny = nx;
 
 x_vec = linspace(-4, 4, nx);
-y_vec = linspace(-4, 4, ny);
+y_vec = linspace(-6, 6, ny);
 [x_mat, y_mat] = meshgrid(x_vec, y_vec);
 
 %% compute displacement and stress
@@ -69,7 +70,7 @@ contour(x_vec,y_vec,reshape(u1,ny,nx),linspace(-1,1,11).*max(abs(u1(:))),'k-')
 axis tight equal
 cb=colorbar; cb.Location='northoutside';
 clim([-1 1].*max(abs(u1(:))))
-colormap bluewhitered(1000)
+colormap(ttscm('vik',1000))
 
 figure(2),clf
 subplot(1,2,1)
@@ -91,16 +92,16 @@ clim([-1 1].*1)
 cb=colorbar;cb.Label.String = '\sigma_{13}';cb.Location='northoutside';
 xlabel('x'), ylabel('y')
 set(gca,'FontSize',15,'LineWidth',1.5)
-colormap bluewhitered(1000)
+colormap(ttscm('bam',100))
 
 figure(3),clf
-subplot(2,1,1)
+subplot(1,2,1)
 toplot = reshape(u1,ny,nx);
 plot(-toplot(:,nx/2)+toplot(:,nx/2+1),y_vec,'-','LineWidth',3)
 grid on, box on
 xlabel('slip'), ylabel('y')
 set(gca,'FontSize',15,'LineWidth',1.5)
-subplot(2,1,2)
+subplot(1,2,2)
 toplot = reshape(s12,ny,nx);
 plot(toplot(:,nx/2),y_vec,'-','LineWidth',3), hold on
 toplot = reshape(s13,ny,nx);
