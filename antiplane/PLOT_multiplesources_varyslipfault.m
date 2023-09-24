@@ -100,7 +100,7 @@ colormap(ttscm('bam',100))
 
 x_mat = zeros(nx*Nsources,1);
 y_mat = zeros(nx*Nsources,1);
-deps = -1e-8;
+deps = 1e-8;
 for i = 1:Nsources
     x1 = xloc(i)-w(i).*cosd(dip(i)) ;% these are not correct - but work for this example
     x2 = xloc(i)+w(i).*cosd(dip(i)) ;
@@ -120,8 +120,8 @@ for i = 1:Nsources
     [u1,s12,s13] = calc_disp_stress_quadfault(x_mat(:),y_mat(:),...
         xloc(i),yloc(i),w(i),[alpha_0,alpha_1,alpha_2],dip(i));
     Ku(:,:,i) = u1;
-    Ks12(:,:,i) = s12;
-    Ks13(:,:,i) = s13;
+    Ks12(:,:,i) = s12.*sind(dip(i));
+    Ks13(:,:,i) = s13.*cosd(dip(i));
 end
 toc
 
@@ -143,7 +143,7 @@ plot(s12,'.','LineWidth',3), hold on
 % toplot = reshape(s13,nx,nx);
 plot(s13,'.','LineWidth',3)
 grid on, box on
-ylim([-1 1]*2)
+ylim([-1 1]*5)
 % xlim([-1 1].*max(abs(get(gca,'XLim'))))
 ylabel('\Delta\tau')
 set(gca,'FontSize',15,'LineWidth',1.5)
