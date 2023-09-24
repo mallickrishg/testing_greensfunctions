@@ -15,10 +15,13 @@ alpha_2 = 1;
 % dimensions of source
 % specify location and dimensions of sources
 w = ones(Nsources,1).*1;
-xloc = ones(Nsources,1).*0;
-yloc = [2,0,-2];
+% xloc = ones(Nsources,1).*0;
+% yloc = [2,0,-2];
+% dip = 90.*ones(Nsources,1);
+dip = [0,90,90];
+xloc = [0-cosd(dip(1)),0,0];
+yloc = [1+sind(dip(1)),0,-2];
 
-dip = 90.*ones(Nsources,1);
 
 % discretize evaluation points
 nx = 500;
@@ -93,22 +96,55 @@ cb=colorbar;cb.Label.String = '\sigma_{13}';cb.Location='northoutside';
 xlabel('x'), ylabel('y')
 set(gca,'FontSize',15,'LineWidth',1.5)
 colormap(ttscm('bam',100))
+%% calculate slip and stress change ON the fault
+
+x_mat = zeros(nx*Nsources,1);
+y_mat = zeros(nx*Nsources,1);
+deps = -1e-8;
+for i = 1:Nsources
+    x1 = xloc(i)-w(i).*cosd(dip(i)) ;% these are not correct - but work for this example
+    x2 = xloc(i)+w(i).*cosd(dip(i)) ;
+    y1 = yloc(i)+w(i).*sind(dip(i)) ;
+    y2 = yloc(i)-w(i).*sind(dip(i)) ;
+
+    x_mat((i-1)*nx+1:i*nx) = linspace(x1,x2,nx)' + deps*sind(dip(i));
+    y_mat((i-1)*nx+1:i*nx) = linspace(y1,y2,nx)' + deps*cosd(dip(i));
+end
+
+Ku = zeros(nx*Nsources,3,Nsources);
+Ks12 = zeros(nx*Nsources,3,Nsources);
+Ks13 = zeros(nx*Nsources,3,Nsources);
+
+tic
+for i = 1:Nsources
+    [u1,s12,s13] = calc_disp_stress_quadfault(x_mat(:),y_mat(:),...
+        xloc(i),yloc(i),w(i),[alpha_0,alpha_1,alpha_2],dip(i));
+    Ku(:,:,i) = u1;
+    Ks12(:,:,i) = s12;
+    Ks13(:,:,i) = s13;
+end
+toc
+
+% use tensor products to contract 3-d matrices
+u1 = tensorprod(Ku,sources,[2 3],[1 2]);
+s12 = tensorprod(Ks12,sources,[2 3],[1 2]);
+s13 = tensorprod(Ks13,sources,[2 3],[1 2]);
 
 figure(3),clf
 subplot(1,2,1)
-toplot = reshape(u1,ny,nx);
-plot(-toplot(:,nx/2)+toplot(:,nx/2+1),y_vec,'-','LineWidth',3)
+% toplot = reshape(u1,nx,nx);
+plot(u1,'.','LineWidth',3)
 grid on, box on
-xlabel('slip'), ylabel('y')
+ylabel('displacement')
 set(gca,'FontSize',15,'LineWidth',1.5)
 subplot(1,2,2)
-toplot = reshape(s12,ny,nx);
-plot(toplot(:,nx/2),y_vec,'-','LineWidth',3), hold on
-toplot = reshape(s13,ny,nx);
-plot(toplot(:,nx/2),y_vec,'-','LineWidth',3)
-axis tight
+% toplot = reshape(s12,nx,nx);
+plot(s12,'.','LineWidth',3), hold on
+% toplot = reshape(s13,nx,nx);
+plot(s13,'.','LineWidth',3)
 grid on, box on
-xlim([-1 1].*max(abs(get(gca,'XLim'))))
-xlabel('\Delta\tau'), ylabel('y')
+ylim([-1 1]*2)
+% xlim([-1 1].*max(abs(get(gca,'XLim'))))
+ylabel('\Delta\tau')
 set(gca,'FontSize',15,'LineWidth',1.5)
 
