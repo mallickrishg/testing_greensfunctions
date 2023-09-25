@@ -5,12 +5,12 @@ addpath functions/
 G = 1;
 % construct mesh for triangle source
 A =[0,-2];
+B = [0,-4];
+C = [2,-3];
 
-% dimensions of box
-L_x = 2*abs(x0);
-L_y = 2*abs(y0);
-dx = 0.01;
-rcv = construct_box(x0,y0,L_x,L_y,dx);
+% dimensions of individual elements
+dx = 0.1;
+rcv = construct_triangle(A,B,C,dx);
 
 
 %% use cuboid kernels to calculate displacement and stress
@@ -19,17 +19,18 @@ obs = rcv.xc - rcv.nv.*1e-12;% -ve normal vector means outside the domain
 
 source_strain = 0.5;
 
-% [Stress_12,~] = calc_stressgreensfunctions_antiplaneshz(G,...
-%                         obs(:,1) - (x0 + L_x/2),obs(:,2),...
-%                         y0,L_x,L_y);
-[Stress_12,Stress_13]=computeStressAntiplaneTriangleShearZone(obs(:,1),obs(:,2),A,B,C,1,0,G);
+% e12 component
+[s12,s13]=computeStressAntiplaneTriangleShearZone(obs(:,1),-obs(:,2),A,B,C,1,0,G);
+Stress_12 = [s12,s13];
+
+% % e13 component
+% [s12,s13]=computeStressAntiplaneTriangleShearZone(obs(:,1),-obs(:,2),A,B,C,0,1,G);
+% Stress_13 = [s12,s13];
 
 s12_shz = Stress_12(:,1).*source_strain;
 s13_shz = Stress_12(:,2).*source_strain;
-% s12_shz = Stress_13(:,1).*source_strain;
-% s13_shz = Stress_13(:,2).*source_strain;
 
-% calculate displacements
+%% calculate displacements
 [Disp_shz] = calc_dispgreensfunctions_antiplaneshz(obs(:,1) - (x0 + L_x/2),obs(:,2),...
                                                y0,L_x,L_y);
 u1_shz = Disp_shz(:,1).*source_strain;
