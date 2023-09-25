@@ -11,7 +11,7 @@ y0 = -1.5;
 % dimensions of box
 L_x = 2*abs(x0);
 L_y = 2*abs(y0);
-dx = 0.01;
+dx = 0.1;
 rcv = construct_box(x0,y0,L_x,L_y,dx);
 left = rcv.xc(:,1) == x0;
 right = rcv.xc(:,1) == x0 + L_x;
