@@ -10,8 +10,8 @@ B = [-1,-2];
 C = [2,-2.5];
 
 % dimensions of individual elements
-dx = 0.5;
-Ntopo = 200;
+dx = 1;
+Ntopo = 500;
 rcv = construct_triangle(A,B,C,dx,Ntopo);
 
 
@@ -19,7 +19,7 @@ rcv = construct_triangle(A,B,C,dx,Ntopo);
 
 obs = rcv.xc - rcv.nv.*1e-12;% -ve normal vector means outside the domain
 
-source_strain = 0.5;
+source_strain = .5;
 
 % e12 component
 [s12,s13]=computeStressAntiplaneTriangleShearZone(obs(:,1),-obs(:,2),A,B,C,1,0,G);
@@ -66,18 +66,22 @@ source_bem = K\BC;
 % plot BEM slip distribution
 figure(5),clf
 subplot(211)
-plot3(rcv.xc(1:rcv.N-Ntopo,1),rcv.xc(1:rcv.N-Ntopo,2),source_bem(1:rcv.N-Ntopo),'ko-','LineWidth',2)
+for i = 1:rcv.N-Ntopo
+    plot3([rcv.x1(i),rcv.xc(i,1),rcv.x2(i)],[rcv.y1(i),rcv.xc(i,2),rcv.y2(i)],...
+        source_bem(i).*[1 1 1],'ko-','LineWidth',2), hold on
+end
 box on, grid on
 axis tight 
 ylabel('y'), xlabel('x'), zlabel('slip')
 
 subplot(212)
-plot(source_bem(1:rcv.N-Ntopo),'.-')
+stem(source_bem(1:rcv.N-Ntopo),'-','LineWidth',1)
+grid on
 ylabel('source strength'), xlabel('node')
 
 %% plot results in the bulk
 % calculate displacements and stresses in the medium
-nx = 100;
+nx = 500;
 ny = nx/2;
 
 x = linspace(-4,4,nx);
@@ -168,7 +172,7 @@ colorbar
 xlabel('x'), ylabel('y')
 title('\sigma_{13} (L&B16)')
 
-colormap bluewhitered(20)
+colormap(flipud(ttscm('roma',20)))
 set(findobj(gcf,'type','axes'),'FontSize',15,'LineWidth', 1,'XLim',[-4,4]);
 
 
