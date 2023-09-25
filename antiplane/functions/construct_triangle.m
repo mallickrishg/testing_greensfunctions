@@ -9,6 +9,10 @@ r1 = sqrt((A(1)-B(1)).^2 + (A(2)-B(2)).^2);
 r2 = sqrt((B(1)-C(1)).^2 + (B(2)-C(2)).^2);
 r3 = sqrt((C(1)-A(1)).^2 + (C(2)-A(2)).^2);
 
+disp(['Length of AB = ' num2str(r1) ', dip = ' num2str(atan2d(A(2)-B(2),A(1)-B(2)))])
+disp(['Length of BC = ' num2str(r2) ', dip = ' num2str(atan2d(B(2)-C(2),B(1)-C(2)))])
+disp(['Length of CA = ' num2str(r3) ', dip = ' num2str(atan2d(C(2)-A(2),C(1)-A(2)))])
+
 Nvec = [round(r1/dx);round(r2/dx);round(r3/dx)];
 N = sum(Nvec);
 
@@ -35,7 +39,7 @@ for i = 1:3
     
 end
 % construct free surface
-topox = linspace(-20,20,Ntopo+1)';
+topox = linspace(-50,50,Ntopo+1)';
 topoy = 0.*topox;
 
 rcv.x1 = [x1;topox(1:end-1)];
