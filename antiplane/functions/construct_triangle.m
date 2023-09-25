@@ -1,9 +1,10 @@
-function rcv = construct_triangle(A,B,C,dx)
+function rcv = construct_triangle(A,B,C,dx,Ntopo)
 
 pts = [A;B;C;A];
 
 rcv = [];
 
+% construct triangle
 r1 = sqrt((A(1)-B(1)).^2 + (A(2)-B(2)).^2);
 r2 = sqrt((B(1)-C(1)).^2 + (B(2)-C(2)).^2);
 r3 = sqrt((C(1)-A(1)).^2 + (C(2)-A(2)).^2);
@@ -33,11 +34,14 @@ for i = 1:3
     y2(st:en) = yval(2:end);
     
 end
+% construct free surface
+topox = linspace(-20,20,Ntopo+1)';
+topoy = 0.*topox;
 
-rcv.x1 = x1;
-rcv.x2 = x2;
-rcv.y1 = y1;
-rcv.y2 = y2;
+rcv.x1 = [x1;topox(1:end-1)];
+rcv.x2 = [x2;topox(2:end)];
+rcv.y1 = [y1;topoy(1:end-1)];
+rcv.y2 = [y2;topoy(2:end)];
 
 
 rcv.xc = [(rcv.x1+rcv.x2)./2 , (rcv.y1+rcv.y2)./2];
