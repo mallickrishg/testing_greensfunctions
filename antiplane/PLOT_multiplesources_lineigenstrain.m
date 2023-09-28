@@ -22,7 +22,7 @@ Ry = ones(Nsources,1).*1.5;
 nx = 100;
 ny = nx;
 
-x_vec = linspace(-4, 4, nx);
+x_vec = linspace(-6, 6, nx);
 y_vec = linspace(-4, 4, ny);
 [x_mat, y_mat] = meshgrid(x_vec, y_vec);
 
@@ -41,10 +41,10 @@ end
 
 %% plot displacement and stresses
 
-% alpha0_vec = [1,3,2];
-% alpha1_vec = [1,1,-2];
-alpha0_vec = [0,1,0];
-alpha1_vec = [0,0,0];
+alpha0_vec = [1,3,2];
+alpha1_vec = [1,1,-2];
+% alpha0_vec = [0,1,0];
+% alpha1_vec = [0,0,0];
 sources = [alpha0_vec;alpha1_vec];
 
 % use tensor products to contract 3-d matrices
@@ -53,6 +53,7 @@ s12 = tensorprod(Ks12,sources,[2 3],[1 2]);
 s13 = tensorprod(Ks13,sources,[2 3],[1 2]);
 
 figure(1),clf
+subplot(3,1,[1 2])
 pcolor(x_vec,y_vec,reshape(u1,ny,nx)), shading interp, hold on
 contour(x_vec,y_vec,reshape(u1,ny,nx),linspace(-1,1,11).*max(abs(u1(:))),'k-')
 for i = 1:Nsources
@@ -67,6 +68,13 @@ cb=colorbar; cb.Location='northoutside';cb.Label.String='u';
 clim([-1 1].*max(abs(u1(:))))
 colormap bluewhitered(1000)
 xlabel('x'),ylabel('y')
+set(gca,'FontSize',15,'LineWidth',1.5,'TickDir','Both')
+
+subplot(3,1,3)
+toplot = reshape(u1,ny,nx);
+plot(x_vec,toplot(ny/2,:),'-','LineWidth',3)
+axis tight, grid on
+xlabel('x'), ylabel('u')
 set(gca,'FontSize',15,'LineWidth',1.5,'TickDir','Both')
 
 figure(2),clf
@@ -103,10 +111,3 @@ xlabel('x'),ylabel('y')
 set(gca,'FontSize',15,'LineWidth',1.5,'TickDir','Both')
 
 colormap bluewhitered(1000)
-
-figure(11),clf
-toplot = reshape(u1,ny,nx);
-plot(x_vec,toplot(ny/2,:),'-','LineWidth',2)
-axis tight, grid on
-xlabel('x'), ylabel('u')
-set(gca,'FontSize',15,'LineWidth',1.5,'TickDir','Both')

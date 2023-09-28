@@ -10,7 +10,7 @@ B = [-1,-2];
 C = [2,-2.5];
 
 % dimensions of individual elements
-dx = 1;
+dx = 0.1;
 Ntopo = 500;
 rcv = construct_triangle(A,B,C,dx,Ntopo);
 
@@ -150,7 +150,7 @@ axis tight equal
 colorbar
 clim([-1 1])
 xlabel('x'), ylabel('y')
-title('u_1 (L&B16)')
+title('u_1 (Barbot18)')
 
 subplot(3,2,4)
 pcolor(x,y,reshape(s12_shz_bulk,ny,nx)), shading interp
@@ -160,7 +160,7 @@ axis tight equal
 clim([-1 1])
 colorbar
 xlabel('x'), ylabel('y')
-title('\sigma_{12} (L&B16)')
+title('\sigma_{12} (Barbot18)')
 
 subplot(3,2,6)
 pcolor(x,y,reshape(s13_shz_bulk,ny,nx)), shading interp
@@ -170,7 +170,7 @@ axis tight equal
 clim([-1 1])
 colorbar
 xlabel('x'), ylabel('y')
-title('\sigma_{13} (L&B16)')
+title('\sigma_{13} (Barbot18)')
 
 colormap(flipud(ttscm('roma',20)))
 set(findobj(gcf,'type','axes'),'FontSize',15,'LineWidth', 1,'XLim',[-4,4]);
