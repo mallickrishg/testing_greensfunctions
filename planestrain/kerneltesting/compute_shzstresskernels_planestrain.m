@@ -1,4 +1,4 @@
-function evl = compute_shzkernels_planestrain(shz,scf)
+function evl = compute_shzstresskernels_planestrain(shz,scf)
 % compute stress interaction kernel for shear zones in plane strain
 % compute displacement kernels at the surface
 
