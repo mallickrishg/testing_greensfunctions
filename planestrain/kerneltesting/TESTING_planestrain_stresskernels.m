@@ -20,10 +20,17 @@ x3shift = 100e3;
 
 shz = create_shzmesh(x2extent,Nx2,x3extent,Nx3,x3shift);
 
+nobs = 60;
+xobs = linspace(-x2extent,x2extent,nobs);
+zobs = linspace(-(x3shift+x3extent),-x3shift,nobs);
+[xobs,zobs] = meshgrid(xobs,zobs);
+obs = [xobs(:), zobs(:)];
+
 %% load kernels for displacement and stress
 tic
-evl_orig = compute_shzkernels_planestrain(shz,1);
-evl = evl_orig;
+evl_orig = compute_shzstresskernels_planestrain(shz,1);
+stresskernel = evl_orig;
+dispkernel = compute_shzdispkernels_planestrain(shz,obs);
 % evl = compute_shzkernels_planestrain(shz,1.0);
 toc
 %% construct deviatoric stress kernels and remove positive eigen values
@@ -33,10 +40,10 @@ L2322o = (evl_orig.LL2322 - evl_orig.LL2333)./2;
 L2223o = (evl_orig.LL2223 - evl_orig.LL3323);
 L2323o = evl_orig.LL2323;
 
-L2222 = (evl.LL2222 - evl.LL3322 - evl.LL2233 + evl.LL3333)./2;
-L2322 = (evl.LL2322 - evl.LL2333)./2;
-L2223 = (evl.LL2223 - evl.LL3323);
-L2323 = evl.LL2323;
+L2222 = (stresskernel.LL2222 - stresskernel.LL3322 - stresskernel.LL2233 + stresskernel.LL3333)./2;
+L2322 = (stresskernel.LL2322 - stresskernel.LL2333)./2;
+L2223 = (stresskernel.LL2223 - stresskernel.LL3323);
+L2323 = stresskernel.LL2323;
 
 %  combine all individual kernels
 bigL = [L2222 L2322;L2223 L2323];
