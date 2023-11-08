@@ -89,7 +89,7 @@ set(findobj(gcf,'type','axes'),'Fontsize',15,'Linewidth',1)
 %% %%%%%%%%%%% prescribe spatial distribution of strain %%%%%%%%%%%%%
 % x20 = 0;
 % x30 = -(x3shift + x3extent/2);
-r0 = 5e3;
+r0 = 4e3;
 strainmax = 1e-3;%1000/(r0^2);
 r = sqrt((shz.x3-x30).^2 + (shz.x2-x20).^2);
 rmax = 1.5*r0;
@@ -315,6 +315,32 @@ cb = colorbar;cb.Label.String = '% change';
 title('\sigma_{23} from \epsilon_{23}')
 set(findobj(gcf,'type','axes'),'CLim',10.^[0 2],'ColorScale','log','FontSize',20,'Linewidth',2,'TickDir','both')
 
+% plot σ22 component as a function of distance from center of source
+figure(104),clf
+set(gcf,'Color','w')
+subplot(2,1,1)
+toplot = (L2222o*strain_source);
+plot(r./1e3,toplot,'ko','Linewidth',1,'MarkerFaceColor','r','MarkerSize',10), hold on
+toplot = (L2222m*strain_source);
+plot(r./1e3,toplot,'bo','Linewidth',1.5)
+axis tight
+xlabel('r (km)'), ylabel('\Delta\tau (MPa)')
+ylim([-1 1]*maxplotval)
+grid on
+set(gca,'FontSize',25,'Linewidth',1.5)
+yyaxis right
+plot(r./1e3,strain_source./strainmax,'o','LineWidth',2), hold on
+plot([r0 rmax]./1e3,[1,0],'-','LineWidth',2)
+ylabel('normalized \epsilon_{source}')
+legend('Original','regularized','Strain','box','off')
+
+subplot(2,1,2)
+toplot = 100.*abs(((L2222o-L2222m)*strain_source)./(abs(L2222o*strain_source)+1));
+semilogy(r./1e3,toplot,'ko','Linewidth',1,'MarkerFaceColor','r')
+axis tight, grid on
+xlabel('r (km)'), ylabel('% error in \sigma_{22}')
+ylim(10.^[-2 2])
+set(gca,'FontSize',25,'Linewidth',1.5)
 %% show how the kernels were altered
 figure(105),clf
 subplot(1,3,1)
