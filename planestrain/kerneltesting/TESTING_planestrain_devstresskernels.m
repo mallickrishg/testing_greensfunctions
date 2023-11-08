@@ -13,14 +13,14 @@ addpath ~/Documents/GitHub/utils/
 x2extent = 10e3;
 x3extent = 20e3;
 
-Nx2 = 10;
+Nx2 = 30;
 Nx3 = x3extent*(Nx2)/2/x2extent;
 
 x3shift = 100e3;
 
 shz = create_shzmesh(x2extent,Nx2,x3extent,Nx3,x3shift);
 
-nobs = 60;
+nobs = 20;
 xobs = linspace(-x2extent,x2extent,nobs);
 zobs = linspace(-(x3shift+x3extent),-x3shift,nobs);
 [xobs,zobs] = meshgrid(xobs,zobs);
@@ -48,9 +48,6 @@ L2323 = stresskernel.LL2323;
 %  combine all individual kernels
 bigL = [L2222 L2322;L2223 L2323];
 
-% Lorig = [evl.LL2222, 0.*evl.LL2322, 0.*evl.LL3322;...
-%          0.*evl.LL2223, evl.LL2323, 0.*evl.LL3323;...
-%          0.*evl.LL2233, 0.*evl.LL2333, evl.LL3333];
 [Evec,eig_ps] = eig(bigL);
 
 % remove eigen values that cause instabilities 
@@ -80,7 +77,7 @@ set(findobj(gcf,'type','axes'),'Fontsize',15,'Linewidth',1)
 %% prescribe spatial distribution of strain
 x20 = 0;
 x30 = -(x3shift + x3extent/2);
-r = 2e3;
+r = 1e3;
 dummy = zeros(shz.N,1);
 
 shzindex = sqrt((shz.x3-x30).^2 + (shz.x2-x20).^2) <= r;
@@ -99,6 +96,7 @@ toplot = L2222o*dummy;
 plotshz(shz,toplot,1), shading flat
 hold on
 plot(xcircle,ycircle,'k-','LineWidth',2)
+quiver(obs(:,1)./1e3,obs(:,2)./1e3,(dispkernel.Gx22-dispkernel.Gx33)*dummy,(dispkernel.Gz22-dispkernel.Gz33)*dummy,'r')
 axis tight equal
 cb = colorbar;
 clim([-1 1].*2)
@@ -111,6 +109,7 @@ toplot = L2322o*dummy;
 plotshz(shz,toplot,1), shading flat
 hold on
 plot(xcircle,ycircle,'k-','LineWidth',2)
+quiver(obs(:,1)./1e3,obs(:,2)./1e3,dispkernel.Gx23*dummy,dispkernel.Gz23*dummy,'r')
 axis tight equal
 cb = colorbar;
 clim([-1 1].*2)
@@ -250,7 +249,7 @@ plot(xcircle,ycircle,'k-','LineWidth',2)
 axis tight equal
 cb = colorbar;
 clim([-1 1])
-colormap bluewhitered(10)
+colormap bluewhitered(16)
 title('\sigma_{22}^{d} from \epsilon_{22}^d')
 set(gca,'FontSize',12,'Linewidth',2)
 
@@ -286,7 +285,7 @@ cb = colorbar;
 clim([-1 1])
 title('\sigma_{23} from \epsilon_{23}')
 set(gca,'FontSize',12,'Linewidth',2)
-set(findobj(gcf,'type','axes'),'CLim',[-1 1]*10)
+set(findobj(gcf,'type','axes'),'CLim',[-1 1]*20)
 
 %% show how the kernels were altered
 figure(105),clf
