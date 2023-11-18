@@ -13,7 +13,7 @@ addpath ~/Documents/GitHub/utils/
 x2extent = 10e3;
 x3extent = 20e3;
 
-Nx2 = 50;
+Nx2 = 20;
 Nx3 = x3extent*(Nx2)/2/x2extent;
 
 x3shift = 100e3;
@@ -89,10 +89,10 @@ set(findobj(gcf,'type','axes'),'Fontsize',15,'Linewidth',1)
 %% %%%%%%%%%%% prescribe spatial distribution of strain %%%%%%%%%%%%%
 % x20 = 0;
 % x30 = -(x3shift + x3extent/2);
-r0 = 4e3;
+r0 = 4.1e3;
 strainmax = 1e-3;%1000/(r0^2);
 r = sqrt((shz.x3-x30).^2 + (shz.x2-x20).^2);
-rmax = 1.5*r0;
+rmax = 1.3*r0;
 % rmax = r0 + 3e3;
 
 strain_source = zeros(shz.N,1);
@@ -326,6 +326,7 @@ plot(r./1e3,toplot,'bo','Linewidth',1.5)
 axis tight
 xlabel('r (km)'), ylabel('\Delta\tau (MPa)')
 ylim([-1 1]*maxplotval)
+xlim([0 x2extent*sqrt(2)/1e3])
 grid on
 set(gca,'FontSize',25,'Linewidth',1.5)
 yyaxis right
@@ -336,10 +337,11 @@ legend('Original','regularized','Strain','box','off')
 
 subplot(2,1,2)
 toplot = 100.*abs(((L2222o-L2222m)*strain_source)./(abs(L2222o*strain_source)+1));
-semilogy(r./1e3,toplot,'ko','Linewidth',1,'MarkerFaceColor','r')
+semilogy(r./1e3,toplot,'ko','Linewidth',1,'MarkerFaceColor','r','MarkerSize',10)
 axis tight, grid on
 xlabel('r (km)'), ylabel('% error in \sigma_{22}')
 ylim(10.^[-2 2])
+xlim([0 x2extent*sqrt(2)/1e3])
 set(gca,'FontSize',25,'Linewidth',1.5)
 %% show how the kernels were altered
 figure(105),clf
