@@ -14,14 +14,14 @@ mu = 1;
 eval_type = 1;
 
 % rectangle domain
-rectangle_x = 0.5;
+rectangle_x = 1.5;
 rectangle_y = 1.5;
 
 nx = 100;
-ny = 50;
+ny = 100;
 
-x_vec = linspace(-4, 4, nx);
-y_vec = linspace(-2, 2, ny);
+x_vec = linspace(-3, 3, nx);
+y_vec = linspace(-3, 3, ny);
 
 if eval_type == 1
     % create a box grid of points
@@ -76,16 +76,21 @@ toc
 
 if eval_type == 1
     figure(21),clf
-    pcolor(x_mat,y_mat,reshape(abs(u1(:)),ny,nx)),shading interp
+    pcolor(x_mat,y_mat,reshape(u1(:),ny,nx)),shading interp
+    hold on
+    contour(x_mat,y_mat,reshape(u1(:),ny,nx),9,'k-')
+    plot(rectangle_x/2.*[-1,1,1,-1,-1],rectangle_y/2.*[1,1,-1,-1,1],'k-','Linewidth',2)
     axis tight equal
-    colorbar
+    cb=colorbar;cb.Label.String = 'u';
     colormap('sky(10)')
+    set(gca,'Fontsize',15,'LineWidth',1)
 
     figure(22),clf
     subplot(211)
     pcolor(x_mat,y_mat,reshape(s12(:),ny,nx)),shading interp
     hold on
-    contour(x_mat,y_mat,reshape(s12(:),ny,nx),9,'k-')
+    contour(x_mat,y_mat,reshape(s12(:),ny,nx),[-1:0.1:1]*0.5,'k-')
+    plot(rectangle_x/2.*[-1,1,1,-1,-1],rectangle_y/2.*[1,1,-1,-1,1],'k-','Linewidth',2)
     axis tight equal
     cb=colorbar;cb.Label.String = '\sigma_{xz}';
     set(gca,'Fontsize',15,'LineWidth',1)
@@ -94,12 +99,13 @@ if eval_type == 1
     subplot(212)
     pcolor(x_mat,y_mat,reshape(s13(:),ny,nx)),shading interp
     hold on
-    contour(x_mat,y_mat,reshape(s13(:),ny,nx),9,'k-')
+    contour(x_mat,y_mat,reshape(s13(:),ny,nx),[-1:0.1:1]*0.5,'k-')
+    plot(rectangle_x/2.*[-1,1,1,-1,-1],rectangle_y/2.*[1,1,-1,-1,1],'k-','Linewidth',2)
     axis tight equal
     cb=colorbar;cb.Label.String = '\sigma_{yz}';
     % clim([-1 1]*max(abs(s13(:))))
     clim([-1 1]*0.5)
-    colormap('turbo(1000)')
+    colormap('turbo(20)')
     set(gca,'Fontsize',15,'LineWidth',1)
     % print('force2d_antiplane','-djpeg','-r200')
 else
