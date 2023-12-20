@@ -1,4 +1,14 @@
 function [u1,s12,s13] = calc_disp_stress_forcevolume(X,Y,Lx,Ly)
+% compute displacements and gradients from a rectangular source computed
+% using numerical integration of point source greens functions
+% INPUTS
+% X,Y - observation points relative to the center of the source (X-x0),(Y-y0)
+% Lx,Ly - dimensions of the source
+% OUTPUTS
+% u1 - displacements
+% s12,s13 - x,y displacement gradients
+% AUTHOR:
+% Rishav Mallick, JPL, 2023
 
 u1 = zeros(size(X));
 s12 = zeros(size(X));
