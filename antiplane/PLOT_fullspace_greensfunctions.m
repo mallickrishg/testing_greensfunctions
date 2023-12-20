@@ -1,5 +1,6 @@
 clear
 addpath ~/Dropbox/scripts/utils/
+addpath functions/
 
 % compute stresses in a full space
 G = 1;
