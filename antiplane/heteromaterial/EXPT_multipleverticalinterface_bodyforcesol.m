@@ -15,10 +15,10 @@ Ltopo = 20;
 Ntopo = Ltopo*64;
 
 % shear moduli structure
-mu_structure = [1,1/2,1/3,1/2,1];
+mu_structure = [1,1/2,1/4,1/2,1];
 
 % construct source
-rcv = create_verticalinterfaces(-10,-0.5,2,0);
+rcv = create_verticalinterfaces(-20,-0.5,2,0);
 % construct bimaterial interface
 bimat = create_verticalinterfaces(-Lmesh,0,Nmesh+1,bimaterial_x);
 % construct free surface
@@ -105,16 +105,18 @@ e13_bem = Dgradient0(:,:,2)*source + Dgradient(:,:,2)*bemsol;
 figure(2),clf
 subplot(2,1,1)
 plot(obs(:,1),uplot_0,'LineWidth',4), hold on
+plot(obs(:,1),Ku(:,indextopo)*ft + uplot_0,'LineWidth',3)
 plot(obs(:,1),Ku(:,~indextopo)*fb,'LineWidth',2)
-plot(obs(:,1),Ku(:,indextopo)*ft,'LineWidth',2)
 plot(obs(:,1),uplot_bem,'k-','LineWidth',3)
 axis tight, grid on
+legend('full space','half-space','interface','hetero BEM')
 xlabel('x'), ylabel('displacement')
 % ylim([-1 1]*0.45)
 set(gca,'FontSize',15,'Linewidth',1)
 
 subplot(2,1,2)
-plot(obs(:,1),uplot_bem,'k-','LineWidth',3)
+plot(obs(:,1),uplot_bem,'k-','LineWidth',3),hold on
+plot(obs(:,1),Ku(:,indextopo)*ft + uplot_0,'LineWidth',3)
 axis tight, grid on
 xlabel('x'), ylabel('displacement')
 ylim([-1 1]*0.45)
