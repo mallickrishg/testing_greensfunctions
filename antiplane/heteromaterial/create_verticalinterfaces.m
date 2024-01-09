@@ -2,7 +2,8 @@ function bimat = create_verticalinterfaces(x3min,x3max,nx3,D)
 % function to create a data structure of interface mesh
 % x3min -> x3max - vertical extent of layer
 % nx3 - number of BE to mesh interface
-% D - vector of x levels
+% D - vector of x_2 values
+% AUTHOR:
 % Rishav Mallick, Caltech SeismoLab, 2022
 
 Nint = length(D);
