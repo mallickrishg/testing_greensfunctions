@@ -10,14 +10,13 @@ clear
 % bimaterial mesh parameters
 Lmesh = 20;
 Nmesh = 200;
-bimaterial_z = linspace(-10,-0.5,10);%[-3,-2,-1];
+bimaterial_z = linspace(-10,-0.1,10);%[-3,-2,-1];
 
 % shear moduli structure (must have dimensions = len(bimaterial) + 1)
-mu_structure = linspace(10,1,length(bimaterial_z)+1);
+mu_structure = linspace(1,1,length(bimaterial_z)+1);
 
 % construct source
-% rcv = create_horizontalinterfaces(-0.5,0.5,2,0);
-rcv = create_verticalinterfaces(-1e5,-0.25,2,0);
+rcv = create_verticalinterfaces(-1e5,-0.5,2,0);
 
 % construct bimaterial interface
 bimat = create_horizontalinterfaces(-Lmesh/2,Lmesh/2,Nmesh+1,bimaterial_z);
@@ -135,3 +134,46 @@ axis tight, grid on
 ylim([-1 1]*0.5)
 ylabel('u_{total}'),xlabel('x')
 set(gca,'FontSize',15,'Linewidth',1)
+
+figure(10),clf
+plot(obs(:,1),uplotf,'k-','LineWidth',3), hold on
+axis tight, grid on
+ylim([-1 1]*0.5)
+ylabel('u_{total}'),xlabel('x')
+set(gca,'FontSize',15,'Linewidth',1)
+
+%% plot displacements in the bulk
+nx = 50;
+nz = 51;
+ox = linspace(-2,2,nx);
+oz = linspace(-2,0,nz);
+[xg,zg] = meshgrid(ox,oz);
+obs = [xg(:),zg(:)];
+
+% source contribution
+[Disp,~] = compute_disp_stress_kernels_fault(rcv,obs);
+uplot_0 = Disp*source;
+
+% compute solution from body force equivalent
+[Ku,~] = compute_disp_stress_kernels_force(combostructure,obs);
+uplotf = uplot_0 + Ku*bemsol;
+
+figure(4),clf
+subplot(2,1,1)
+pcolor(ox,oz,reshape(uplot_0,nz,nx)), shading interp, hold on
+contour(ox,oz,reshape(uplot_0,nz,nx),[-1:0.1:1]*0.5,'k-')
+axis tight equal
+clim([-1 1]*0.5)
+cb=colorbar;cb.Label.String = 'u (source)';
+ylabel('z'),xlabel('x')
+set(gca,'FontSize',15,'Linewidth',1,'TickDir','both')
+
+subplot(2,1,2)
+pcolor(ox,oz,reshape(uplotf,nz,nx)), shading interp, hold on
+contour(ox,oz,reshape(uplotf,nz,nx),[-1:0.1:1]*0.5,'k-')
+axis tight equal
+clim([-1 1]*0.5)
+cb=colorbar;cb.Label.String = 'u (BEM)';
+colormap bluewhitered(20)
+ylabel('z'),xlabel('x')
+set(gca,'FontSize',15,'Linewidth',1,'TickDir','both')
