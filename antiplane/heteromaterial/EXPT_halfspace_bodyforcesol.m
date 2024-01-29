@@ -51,12 +51,12 @@ uplot_bem = Ku*bemsol;
 
 figure(2),clf
 plot(obs(:,1),uplot_0,'-','LineWidth',4), hold on
-plot(obs(:,1),uplot_bem,'-','LineWidth',3)
-plot(obs(:,1),uplot_0 + uplot_bem,'k-','LineWidth',3)
-axis tight, grid on
-legend('full space','topography','BEM','location','best')
+% plot(obs(:,1),uplot_bem,'-','LineWidth',3)
+% plot(obs(:,1),uplot_0 + uplot_bem,'k-','LineWidth',3)
+axis tight
+% legend('full space','topography','BEM','location','best')
 xlabel('x'), ylabel('displacement')
-% ylim([-1 1]*0.45)
+ylim([-1 1]*0.2)
 set(gca,'FontSize',15,'Linewidth',1)
 print('disp_surf_source','-djpeg','-r200')
 
@@ -64,6 +64,7 @@ figure(3),clf
 plot(obs(:,1),uplot_0 + uplot_bem,'k-','LineWidth',3)
 xlabel('x'), ylabel('displacement')
 set(gca,'FontSize',15,'Linewidth',1)
+ylim([-1 1]*0.2)
 print('disp_surf_bem','-djpeg','-r200')
 
 %% plot displacements in the bulk
@@ -89,7 +90,7 @@ axis tight equal
 clim([-1 1]*0.5)
 cb=colorbar;cb.Label.String = 'u (source)';
 ylabel('z'),xlabel('x')
-set(gca,'FontSize',20,'Linewidth',1,'TickDir','both')
+set(gca,'FontSize',15,'Linewidth',1,'TickDir','both')
 colormap(ttscm('vik',1000))
 print('disp_bulk_source','-djpeg','-r200')
 
@@ -100,6 +101,6 @@ axis tight equal
 clim([-1 1]*0.5)
 cb=colorbar;cb.Label.String = 'u (BEM)';
 ylabel('z'),xlabel('x')
-set(gca,'FontSize',20,'Linewidth',1,'TickDir','both')
+set(gca,'FontSize',15,'Linewidth',1,'TickDir','both')
 colormap(ttscm('vik',1000))
 print('disp_bulk_bem','-djpeg','-r200')
