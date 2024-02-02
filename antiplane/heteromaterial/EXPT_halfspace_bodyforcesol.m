@@ -13,7 +13,7 @@ Ntopo = Ltopo*25;
 % construct source
 rcv = create_verticalinterfaces(-5,-0,201,0);
 % specify slip taper length-scale
-Ltaper = 1;
+Ltaper = 0.5;
 
 % construct free surface
 topo = create_horizontalinterfaces(-Ltopo/2,Ltopo/2,Ntopo+1,0);
@@ -107,8 +107,10 @@ colormap(ttscm('vik',1000))
 % print('disp_bulk_source','-djpeg','-r200')
 
 figure(5),clf
+set(gcf,'Color','w')
 pcolor(ox,oz,reshape(uplot_0+uplot_bem,nz,nx)), shading interp, hold on
 contour(ox,oz,reshape(uplot_0+uplot_bem,nz,nx),[-1:0.1:1]*0.5,'k-')
+plot(ox,-Ltaper.*ones(nx,1),'r--')
 axis tight equal
 clim([-1 1]*0.5)
 cb=colorbar;cb.Label.String = 'u (BEM)';
@@ -138,6 +140,7 @@ set(gca,'FontSize',15,'Linewidth',1,'TickDir','both')
 colormap(ttscm('vik',20))
 
 figure(11),clf
+set(gcf,'Color','w')
 toplot = sqrt((e12_0+e12_bem).^2 + (e13_0+e13_bem).^2);
 pcolor(ox,oz,reshape(toplot,nz,nx)), shading interp, hold on
 contour(ox,oz,reshape(toplot,nz,nx),[0:0.1:1],'w-')
