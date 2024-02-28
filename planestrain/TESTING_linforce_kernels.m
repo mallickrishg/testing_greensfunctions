@@ -138,23 +138,32 @@ figure(1),clf
 subplot(2,2,1)
 plot(xo,ux_1(1,0,w),'Linewidth',2), hold on
 plot(xo,ux_2(1,0,w),'Linewidth',2)
+xlabel('x')
 title('u_x (f_x)','FontWeight','normal')
 
 subplot(2,2,3)
 plot(xo,ux_1(0,1,w),'Linewidth',2), hold on
 plot(xo,ux_2(0,1,w),'Linewidth',2)
+xlabel('x')
 title('u_x (f_y)','FontWeight','normal')
 
 subplot(2,2,2)
 plot(xo,uy_1(1,0,w),'Linewidth',2), hold on
 plot(xo,uy_2(1,0,w),'Linewidth',2)
+xlabel('x')
 title('u_y (f_x)','FontWeight','normal')
 
 subplot(2,2,4)
 plot(xo,uy_1(0,1,w),'Linewidth',2), hold on
 plot(xo,uy_2(0,1,w),'Linewidth',2)
+xlabel('x')
 title('u_y (f_y)','FontWeight','normal')
-set(findobj(gcf,'type','axes'),'FontSize',20,'LineWidth',1,'TickDir','both','YLim',[-1 1]*0.5);
+set(findobj(gcf,'type','axes'),'FontSize',20,'LineWidth',1,'TickDir','both','YLim',[-1 1]*0.2);
+for i = 1:4
+    subplot(2,2,i)
+    plot([1 1]*w,get(gca,'YLim'),'k--')
+    plot([1 1]*-w,get(gca,'YLim'),'k--')
+end
 
 % Stresses
 % sxy
@@ -162,34 +171,44 @@ figure(11),clf
 subplot(2,3,1)
 plot(xo,sxy_1(1,0,w),'Linewidth',2), hold on
 plot(xo,sxy_2(1,0,w),'Linewidth',2)
+xlabel('x')
 title('\sigma_{xy} (f_x)','FontWeight','normal')
 
 subplot(2,3,4)
 plot(xo,sxy_1(0,1,w),'Linewidth',2), hold on
 plot(xo,sxy_2(0,1,w),'Linewidth',2)
+xlabel('x')
 title('\sigma_{xy} (f_y)','FontWeight','normal')
 
 % sxx
 subplot(2,3,2)
 plot(xo,sxx_1(1,0,w),'Linewidth',2), hold on
 plot(xo,sxx_2(1,0,w),'Linewidth',2)
+xlabel('x')
 title('\sigma_{xx} (f_x)','FontWeight','normal')
 
 subplot(2,3,5)
 plot(xo,sxx_1(0,1,w),'Linewidth',2), hold on
 plot(xo,sxx_2(0,1,w),'Linewidth',2)
+xlabel('x')
 title('\sigma_{xx} (f_y)','FontWeight','normal')
 
 % syy
 subplot(2,3,3)
 plot(xo,syy_1(1,0,w),'Linewidth',2), hold on
 plot(xo,syy_2(1,0,w),'Linewidth',2)
+xlabel('x')
 title('\sigma_{yy} (f_x)','FontWeight','normal')
 
 subplot(2,3,6)
 plot(xo,syy_1(0,1,w),'Linewidth',2), hold on
 plot(xo,syy_2(0,1,w),'Linewidth',2)
+xlabel('x')
 title('\sigma_{xx} (f_y)','FontWeight','normal')
 
 set(findobj(gcf,'type','axes'),'FontSize',20,'LineWidth',1,'TickDir','both','YLim',[-1 1]*0.5);
-
+for i = 1:6
+    subplot(2,3,i)
+    plot([1 1]*w,get(gca,'YLim'),'k--')
+    plot([1 1]*-w,get(gca,'YLim'),'k--')
+end
