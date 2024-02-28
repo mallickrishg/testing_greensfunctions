@@ -9,10 +9,18 @@ clear
 mu = 1;
 nu = 0.25;
 
-Nobs = 100;
+Nobs = 1000;
 xo = linspace(-2,2,Nobs)';
 yo = zeros(Nobs,1);
 
+% Displacement kernels copied over from Mathematica for a horizontal line
+% element present at y = 0, -w <= x <= w
+% 
+% ux,uy kernels have two linear basis functions
+% f1: goes from (-w,0) to (w,1)
+% f2: goes from (-w,1) to (w,0)
+
+% ux kernels (is non-zero at yo = 0 only for fx)
 ux_1 = @(fx,fy,w) ((1/8).*fx.*w.^(-1).*(w+(-1).*xo).*(3.*w+xo).*mu.^(-1).*nu.*(pi+(-1) ...
   .*pi.*nu).^(-1).*log((w+(-1).*xo).^2+yo.^2)+(1/32).*fx.*pi.^(-1).* ...
   w.^(-1).*mu.^(-1).*((-1)+nu).^(-1).*(4.*w.*(8.*w.*((-1)+nu)+xo.*((-3) ...
@@ -36,6 +44,7 @@ ux_2 = @(fx,fy,w) (1/64).*fx.*pi.^(-1).*w.^(-1).*(w+(-1).*xo).^2.*mu.^(-1).*(3+(
   fy.*((-1).*w+xo).*yo+fx.*(3.*(3.*w+(-1).*xo).*(w+xo)+5.*yo.^2+(-4) ...
   .*((3.*w+(-1).*xo).*(w+xo)+yo.^2).*nu)).*log((w+xo).^2+yo.^2));
 
+% uy kernels (is non-zero at yo = 0 only for fy)
 uy_1 = @(fx,fy,w) (1/32).*fx.*pi.^(-1).*w.^(-1).*yo.*mu.^(-1).*((-1)+nu).^(-1).*(4.*w+ ...
   (-2).*yo.*(atan2(w-xo,yo)+atan2(w+xo,yo))+( ...
   w+xo).*(log((w+(-1).*xo).^2+yo.^2)+(-1).*log((w+xo).^2+yo.^2)))+( ...
