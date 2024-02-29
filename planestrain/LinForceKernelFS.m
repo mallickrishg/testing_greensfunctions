@@ -75,7 +75,7 @@ uy_2 = @(fx,fy,w) fx.*((-1/32).*pi.^(-1).*w.^(-1).*yo.*mu.^(-1).*((-1)+nu).^(-1)
 
 % Store displacement kernels (4-d matrix)
 % Disp_kernels - [Nobs x (ux or uy) x (fx or fy) x 2 basis functions]
-Disp = zeros(Nobs,2,2);
+Disp = zeros(Nobs,2,2,2);
 
 % fx kernels
 Disp(:,1,1,:) = [ux_1(fx,0,w),ux_2(fx,0,w)];
