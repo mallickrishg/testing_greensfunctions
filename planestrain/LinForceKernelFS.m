@@ -5,7 +5,6 @@ function [Disp,Stress] = LinForceKernelFS(x,y,xf,yf,w,nu,mu)
 % x,y - observation locations provided as individual vectors [Nobs x 1]
 % xf,yf - source element center location (scalars)
 % w - source element half-length
-% fx,fy - force components (scalars)
 % nu,mu - Elastic parameters
 % OUTPUTS
 % Disp - 4-d displacement kernels [Nobs x (ux or uy) x (fx or fy) x 2 basis functions]
