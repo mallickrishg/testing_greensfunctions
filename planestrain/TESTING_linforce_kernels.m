@@ -219,62 +219,24 @@ for i = 1:6
     plot([1 1]*-w,get(gca,'YLim'),'k--')
 end
 
-%% compare with stress kernel function
-if false    
-    [Disp,Stress] = LinForceKernelFS(xo,yo,0,0,w,nu,mu);
-    % Disp_kernels - [Nobs x (ux or uy) x (fx or fy) x 2 basis functions]
-    figure(100),clf
-    for i = 1:2 % ux or uy
-        for j = 1:2 % fx or fy
-            plotval = (i-1)*2 + j;
-            subplot(2,2,plotval)
-            for k = 1:2 % basis functions
-                toplot = Disp(:,i,j,k);
-                plot(xo,toplot,'-'), hold on
-            end
-            if j == 1
-                title('f_x')
-            else
-                title('f_y')
-            end
-            ylim([-1 1]*0.2)
-        end
-    end
 
-    % Stress_kernels - [Nobs x (sxx,sxy,syy) x (fx or fy) x2 basis functions]
-    figure(101),clf
-    for i = 1:3 % sxx, sxy or syy
-        for j = 1:2 % fx or fy
-            plotval = (i-1)*2 + j;
-            subplot(3,2,plotval)
-            for k = 1:2 % basis functions
-                toplot = Stress(:,i,j,k);
-                plot(xo,toplot,'-'), hold on
-            end
-            if j == 1
-                title('f_x')
-            else
-                title('f_y')
-            end
-            ylim([-1 1]*0.5)
-        end
-    end
-end
 %% plot u,σ in the bulk
-Nx = 40;
-Ny = 40;
+Nx = 100;
+Ny = 100;
 xg = linspace(-2,2,Nx);
 yg = linspace(-2,2,Ny);
 [xo,yo] = meshgrid(xg,yg);
 
-[Disp,Stress] = LinForceKernelFS_2(xo(:),yo(:),0,0,w,nu,mu);
+[Disp,Stress,Strain] = LinForceKernelFS(xo(:),yo(:),0,0,w,nu,mu);
+
+% Disp_kernels - [Nobs x (ux or uy) x (fx or fy) x 2 basis functions]
 figure(100),clf
 for i = 1:2 % ux or uy
     for j = 1:2 % fx or fy
         plotval = (i-1)*2 + j;
         subplot(2,2,plotval)
-        for k = 1%:2 % basis functions
-            toplot = Disp(:,i,j,k);%+Disp(:,i,j,k+1);
+        for k = 1 % basis functions
+            toplot = Disp(:,i,j,k);
             pcolor(xg,yg,reshape(toplot,Ny,Nx)), shading interp
             colorbar
         end
@@ -287,16 +249,17 @@ for i = 1:2 % ux or uy
     end
 end
 
-% Stress_kernels - [Nobs x (sxx,sxy,syy) x (fx or fy) x2 basis functions]
+% Stress or strain kernels - [Nobs x (sxx,sxy,syy) x (fx or fy) x 2 basis functions]
 figure(101),clf
 for i = 1:3 % sxx, sxy or syy
     for j = 1:2 % fx or fy
         plotval = (i-1)*2 + j;
         subplot(3,2,plotval)
-        for k = 1 % basis functions
-            toplot = Stress(:,i,j,1);
+        for k = 2 % basis functions
+            toplot = Strain(:,i,j,k);          
             pcolor(xg,yg,reshape(toplot,Ny,Nx)), shading interp
-            colorbar, clim([-1 1]*0.5)
+            colorbar, clim([-1 1]*0.25)
+            colormap(turbo(20))
         end
         if j == 1
             title('f_x')
@@ -307,3 +270,29 @@ for i = 1:3 % sxx, sxy or syy
         set(gca,'FontSize',15,'LineWidth',1.5,'TickDir','out')
     end
 end
+
+%% test strain using FD displacement gradient calculations
+[duxdx,duxdy] = gradient(reshape(Disp(:,1,2,1),Ny,Nx),xg,yg);
+[duydx,duydy] = gradient(reshape(Disp(:,2,2,1),Ny,Nx),xg,yg);
+toplot = (duxdy + duydx)./2;% exy
+% toplot = duxdx;% exx
+% toplot = duydy;% eyy
+
+figure(200),clf
+subplot(2,1,1)
+pcolor(xg,yg,toplot), shading interp
+colorbar, 
+clim([-1 1]*0.25)
+colormap(turbo(20))
+axis tight equal
+
+subplot(2,1,2)
+toplot = reshape(Strain(:,2,2,1),Ny,Nx);
+pcolor(xg,yg,toplot), shading interp
+colorbar, 
+clim([-1 1]*0.25)
+colormap(turbo(20))
+axis tight equal
+
+
+

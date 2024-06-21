@@ -1,4 +1,4 @@
-function [Disp,Stress] = LinForceKernelFS(x,y,xf,yf,w,nu,mu)
+function [Disp,Stress,Strain] = LinForceKernelFS(x,y,xf,yf,w,nu,mu)
 % compute displacement and stress kernels for a linearly varying force on a
 % horizontal source element (-w <= x <= w, y = 0)
 % INPUTS
@@ -8,7 +8,7 @@ function [Disp,Stress] = LinForceKernelFS(x,y,xf,yf,w,nu,mu)
 % nu,mu - Elastic parameters
 % OUTPUTS
 % Disp - 4-d displacement kernels [Nobs x (ux or uy) x (fx or fy) x 2 basis functions]
-% Stress - 4-d stress_kernels     [Nobs x (sxx,sxy,syy) x (fx or fy) x 2 basis functions]
+% Stress,Strain - 4-d stress_kernels     [Nobs x (sxx,sxy,syy) x (fx or fy) x 2 basis functions]
 % 
 % AUTHORS
 % Rishav Mallick, JPL, 2024
@@ -145,9 +145,24 @@ syy_2 = @(fx,fy,w) (-1/8).*fx.*pi.^(-1).*w.^(-1).*((-1)+nu).^(-1).*(2.*w.*((w+xo
   (w+(-1).*xo).*((-1)+nu).*atan((w+xo)./yo)+(-1/2).*yo.*((-1)+ ...
   2.*nu).*(log((w+(-1).*xo).^2+yo.^2)+(-1).*log((w+xo).^2+yo.^2)));
 
-% Store stress kernels (4-d matrix)
-% Stress_kernels - [Nobs x (sxx,sxy,syy) x (fx or fy) x2 basis functions]
+%% Strain kernels
+
+% exx
+exx_1 = @(fx,fy,w) 1/(2*mu*(1+nu)).*(sxx_1(fx,fy,w) - nu.*syy_1(fx,fy,w));
+exx_2 = @(fx,fy,w) 1/(2*mu*(1+nu)).*(sxx_2(fx,fy,w) - nu.*syy_2(fx,fy,w));
+
+% eyy
+eyy_1 = @(fx,fy,w) 1/(2*mu*(1+nu)).*(syy_1(fx,fy,w) - nu.*sxx_1(fx,fy,w));
+eyy_2 = @(fx,fy,w) 1/(2*mu*(1+nu)).*(syy_2(fx,fy,w) - nu.*sxx_2(fx,fy,w));
+
+% exy
+exy_1 = @(fx,fy,w) 1/(2*mu).*sxy_1(fx,fy,w);
+exy_2 = @(fx,fy,w) 1/(2*mu).*sxy_2(fx,fy,w);
+
+%% Store stress and strain kernels (4-d matrix)
+% Stress_kernels - [Nobs x (sxx,sxy,syy) x (fx or fy) x 2 basis functions]
 Stress = zeros(Nobs,3,2,2);
+Strain = zeros(Nobs,3,2,2);
 
 % fx kernels
 Stress(:,1,1,:) = [sxx_1(fx,0,w),sxx_2(fx,0,w)];
@@ -157,6 +172,15 @@ Stress(:,3,1,:) = [syy_1(fx,0,w),syy_2(fx,0,w)];
 Stress(:,1,2,:) = [sxx_1(0,fy,w),sxx_2(0,fy,w)];
 Stress(:,2,2,:) = [sxy_1(0,fy,w),sxy_2(0,fy,w)];
 Stress(:,3,2,:) = [syy_1(0,fy,w),syy_2(0,fy,w)];
+
+% fx kernels
+Strain(:,1,1,:) = [exx_1(fx,0,w),exx_2(fx,0,w)];
+Strain(:,2,1,:) = [exy_1(fx,0,w),exy_2(fx,0,w)];
+Strain(:,3,1,:) = [eyy_1(fx,0,w),eyy_2(fx,0,w)];
+% fy kernels
+Strain(:,1,2,:) = [exx_1(0,fy,w),exx_2(0,fy,w)];
+Strain(:,2,2,:) = [exy_1(0,fy,w),exy_2(0,fy,w)];
+Strain(:,3,2,:) = [eyy_1(0,fy,w),eyy_2(0,fy,w)];
 
 
 end
