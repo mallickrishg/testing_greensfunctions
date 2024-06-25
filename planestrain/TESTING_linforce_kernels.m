@@ -255,10 +255,10 @@ for i = 1:3 % sxx, sxy or syy
     for j = 1:2 % fx or fy
         plotval = (i-1)*2 + j;
         subplot(3,2,plotval)
-        for k = 2 % basis functions
-            toplot = Strain(:,i,j,k);          
+        for k = 1 % basis functions
+            toplot = Stress(:,i,j,k);          
             pcolor(xg,yg,reshape(toplot,Ny,Nx)), shading interp
-            colorbar, clim([-1 1]*0.25)
+            colorbar, clim([-1 1]*0.5)
             colormap(turbo(20))
         end
         if j == 1
