@@ -1,6 +1,6 @@
-% script to test how stress singularities manifest in the deviatoric stress
-% kernels and the scale at which they are most important 
-% for eq-cycle calculations
+% script to plot difference between original and regularized stress kernels
+% and determine the length scale beyond which there is no difference
+% between the 2 kernels
 % 
 % Authors:
 % Rishav Mallick, JPL/Caltech
@@ -325,27 +325,27 @@ for i = 1:length(multiplier_vec)
     index = abs(shz.x3 + 110e3) == min(abs(shz.x3 + 110e3));
 
     figure(104)
-    subplot(2,2,1)
-    toplot = (L2222o*strain_source);
-    plot(r(index)./1e3,toplot(index),'-','Linewidth',2,'Color',cspec(i,:)), hold on
-    toplot = (L2222m*strain_source);
-    plot(r(index)./1e3,toplot(index),'ko','MarkerFaceColor',cspec(i,:))
-    axis tight
-    xlabel('r (km)'), ylabel('\Delta\sigma (MPa)')
-    ylim([-22 15])
-    xlim([0 x2extent/1e3])
-    % grid on
-    legend('original','regularized','box','off')
-    set(gca,'FontSize',20,'Linewidth',1.5)
+    % subplot(4,1,[2 3])
+    % toplot = (L2222o*strain_source);
+    % plot(r(index)./1e3,toplot(index),'-','Linewidth',2,'Color',cspec(i,:)), hold on
+    % toplot = (L2222m*strain_source);
+    % plot(r(index)./1e3,toplot(index),'ko','MarkerFaceColor',cspec(i,:))
+    % axis tight
+    % xlabel('r (km)'), ylabel('\Delta\sigma (MPa)')
+    % ylim([-22 15])
+    % xlim([0 x2extent/1e3])
+    % % grid on
+    % legend('original','regularized','box','off')
+    % set(gca,'FontSize',20,'Linewidth',1.5)
     
-    subplot(2,2,3)
-    plot(r(index)./1e3,strain_source(index)./strainmax,'o-','LineWidth',2,'Color',cspec(i,:)), hold on
-    % plot(r./1e3,strain_source./strainmax,'.','LineWidth',2)
-    ylim([0 1])
-    xlim([0 x2extent/1e3])
-    ylabel('normalized \epsilon_{source}'), xlabel('r (km)')    
-    % title('horizontal transect')
-    set(gca,'FontSize',20,'Linewidth',1.5)
+    % subplot(2,2,3)
+    % plot(r(index)./1e3,strain_source(index)./strainmax,'o-','LineWidth',2,'Color',cspec(i,:)), hold on
+    % % plot(r./1e3,strain_source./strainmax,'.','LineWidth',2)
+    % ylim([0 1])
+    % xlim([0 x2extent/1e3])
+    % ylabel('normalized \epsilon_{source}'), xlabel('r (km)')    
+    % % title('horizontal transect')
+    % set(gca,'FontSize',20,'Linewidth',1.5)
 
     % subplot(2,2,3)
     % toplot = 100.*abs(((L2222o-L2222m)*strain_source)./(abs(L2222o*strain_source)+1));
@@ -361,35 +361,38 @@ for i = 1:length(multiplier_vec)
     % index = abs(shz.x2 - 0e3) == min(abs(shz.x2 - 0e3));
     index_diagonal = abs(1*shz.x2 + 1*shz.x3 + 110e3)/sqrt(1^2 + 1^2) <= 0.2e3;
 
-    subplot(2,2,2)
-    toplot = (L2222o*strain_source);
+    subplot(4,1,[2 3]) 
+    toplot = (L2222o*strain_source)/30e3/strainmax;
     plot(r(index_diagonal)./1e3,toplot(index_diagonal),'-','Linewidth',2,'Color',cspec(i,:)), hold on
-    toplot = (L2222m*strain_source);
+    toplot = (L2222m*strain_source)/30e3/strainmax;
     plot(r(index_diagonal)./1e3,toplot(index_diagonal),'ko','MarkerFaceColor',cspec(i,:))
     axis tight
-    xlabel('r (km)'), ylabel('\Delta\sigma (MPa)')
-    ylim([-22 10])
+    % xlabel('r (km)'), 
+    % ylim([-22 10])
     xlim([0 x2extent/1e3])
     grid off
     set(gca,'FontSize',20,'Linewidth',1.5)
+    ylabel('$\frac{\Delta\sigma}{\mu\Delta\epsilon_v}$','Interpreter','latex','FontSize',35)
     
-    subplot(2,2,4)
+    subplot(4,1,1)
     plot(r(index_diagonal)./1e3,strain_source(index_diagonal)./strainmax,'-','LineWidth',2,'Color',cspec(i,:)), hold on
     % plot(r./1e3,strain_source./strainmax,'.','LineWidth',2)
-    ylabel('normalized \epsilon_{source}'), xlabel('r (km)')
+     %xlabel('r (km)')
     ylim([0 1])
     xlim([0 x2extent/1e3])
     set(gca,'FontSize',20,'Linewidth',1.5)
+    ylabel('$\Delta\epsilon_v$','Interpreter','latex','FontSize',25),
     % title('diagonal transect')
 
-    % subplot(2,2,4)
-    % toplot = 100.*abs(((L2222o-L2222m)*strain_source)./(abs(L2222o*strain_source)+1));
-    % semilogy(r(index_diagonal)./1e3,toplot(index_diagonal),'ko-','Linewidth',1,'MarkerFaceColor','r','MarkerSize',10)
-    % axis tight, grid on
-    % xlabel('r (km)'), ylabel('% error')
-    % ylim(10.^[-2 2])
-    % xlim([0 x2extent/1e3])
-    % set(gca,'FontSize',20,'Linewidth',1.5)
+    subplot(4,1,4)
+    toplot = 100.*abs(((L2222o-L2222m)*strain_source)./(abs(L2222o*strain_source)+1));
+    semilogy(r(index_diagonal)./1e3,toplot(index_diagonal),'o-','Linewidth',1,'MarkerFaceColor',cspec(i,:),'MarkerSize',7,'Color',cspec(i,:))
+    hold on
+    axis tight, grid off
+    xlabel('r (km)'), ylabel('% change')
+    ylim(10.^[-2 2])
+    xlim([0 x2extent/1e3])
+    set(gca,'FontSize',20,'Linewidth',1.5)
 end
 print('kerneldifference_transects','-djpeg','-r200')
 
