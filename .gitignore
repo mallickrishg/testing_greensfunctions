@@ -153,3 +153,4 @@ cython_debug/
 antiplane/.DS_Store
 .DS_Store
 *.pdf
+planestrain/kerneltesting/Figure_regkernels_comparison.pdf
