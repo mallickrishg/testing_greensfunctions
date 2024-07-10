@@ -152,3 +152,4 @@ cython_debug/
 
 antiplane/.DS_Store
 .DS_Store
+*.pdf
