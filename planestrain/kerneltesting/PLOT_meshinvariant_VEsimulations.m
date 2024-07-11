@@ -128,7 +128,7 @@ for i = 1:length(Nvec)
     semilogx(tvec./tnorm,sqrt(sol22_in_matrix(i,:).^2 + sol23_in_matrix(i,:).^2),'-','LineWidth',2,'Color',cspec(i,:)), hold on
 end
 xlabel('t*'), ylabel('\epsilon_v (inside)')
-axis tight, ylim([0 1.1])
+axis tight, ylim([0 1.2])
 legend(num2str(Nvec'),'box','off')
 set(gca,'FontSize',20,'Linewidth',1.5)
 subplot(2,1,2)
@@ -136,6 +136,6 @@ for i = 1:length(Nvec)
     semilogx(tvec./tnorm,sqrt(sol22_out_matrix(i,:).^2 + sol23_out_matrix(i,:).^2),'-','LineWidth',2,'Color',cspec(i,:)), hold on
 end
 xlabel('t*'), ylabel('\epsilon_v (outside)')
-axis tight, ylim([0 1.1])
+axis tight, ylim([0 1.2])
 set(gca,'FontSize',20,'Linewidth',1.5)
 print('meshtest_timeseries','-djpeg','-r300')

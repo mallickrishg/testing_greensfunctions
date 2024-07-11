@@ -96,17 +96,31 @@ set(gca,'FontSize',20,'Linewidth',1)
 
 %% plot solution at time steps
 tnorm = eta_matrix/30e3;
-sourceindex = r<=r0;
 
 tsnapshots = [0.1,0.5,1,2,5,10,15,20,22].*tnorm;
 
 figure(10),clf
-plot(tvec./tnorm,mean(sqrt(e22dot(sourceindex,:).^2 + e23dot(sourceindex,:).^2)),'-','LineWidth',2), hold on
-plot(tvec./tnorm,mean(sqrt(e22dot_reg(sourceindex,:).^2 + e23dot_reg(sourceindex,:).^2)),'--','LineWidth',2)
+set(gcf,'Position',[0 0 1.5 1.5]*500)
+subplot(2,1,1)
+sourceindex = r<=r0;
+plot(tvec./tnorm,mean(sqrt(e22dot(sourceindex,:).^2 + e23dot(sourceindex,:).^2)),'-','LineWidth',3), hold on
+plot(tvec./tnorm,mean(sqrt(e22dot_reg(sourceindex,:).^2 + e23dot_reg(sourceindex,:).^2)),'r--','LineWidth',2)
 xlim([min(tvec) max(tvec)]./tnorm)
-ylim([1e-2 1e2]), grid on
-xlabel('t*'), ylabel('\epsilon_v')
-set(gca,'Xscale','log','YScale','log','LineWidth',1.5,'FontSize',20)
+% ylim([1e-2 1e2]), grid on
+ylim([0 1.2])
+xlabel('t*'), ylabel('\epsilon_v (inside)')
+set(gca,'Xscale','log','YScale','lin','LineWidth',1.5,'FontSize',20)
+
+subplot(2,1,2)
+sourceindex = r>r0 & r<1.5*r0;
+plot(tvec./tnorm,mean(sqrt(e22dot(sourceindex,:).^2 + e23dot(sourceindex,:).^2)),'-','LineWidth',3), hold on
+plot(tvec./tnorm,mean(sqrt(e22dot_reg(sourceindex,:).^2 + e23dot_reg(sourceindex,:).^2)),'r--','LineWidth',2)
+xlim([min(tvec) max(tvec)]./tnorm)
+% ylim([1e-2 1e2]), grid on
+ylim([0 1.2])
+xlabel('t*'), ylabel('\epsilon_v (outside)')
+set(gca,'Xscale','log','YScale','lin','LineWidth',1.5,'FontSize',20)
+
 print('relaxation_plots_timeseries','-djpeg','-r300')
 
 figure(11),clf
