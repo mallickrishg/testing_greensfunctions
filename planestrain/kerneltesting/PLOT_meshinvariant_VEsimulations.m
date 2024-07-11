@@ -7,12 +7,13 @@
 clear
 
 addpath ~/Documents/GitHub/utils/
+addpath ~/Documents/GitHub/topotoolbox/colormaps/
 
-Nvec = [10,14,20,26,30,40];
+Nvec = [10,14,18,22,26,30,34,38,42];
 % Nvec = [10,20];
 
 % time steps to evaluate solution
-tvec = logspace(0,6,100).*86400;% in seconds
+tvec = logspace(0,6,40).*86400;% in seconds
 
 % solution matrix (evaluated inside the source domain)
 sol22_in_matrix = zeros(length(Nvec),length(tvec));
@@ -23,32 +24,39 @@ sol23_out_matrix = zeros(length(Nvec),length(tvec));
 % construct mesh
 x2extent = 10e3;
 x3extent = 20e3;
-x3shift = 100e3;
+x3shift = 2e3;
 % provide source properties
 x20 = 0;
 x30 = -(x3shift + x3extent/2);
 r0 = 5e3;
+strainmax = 1;
 % circle source
 theta = linspace(0,360,100);
 xcircle = r0.*cosd(theta)./1e3;
 ycircle = (r0.*sind(theta)+x30)./1e3;
 
 figure(1),clf
+set(gcf,'Position',[0 0 3 2]*500)
 for i = 1:length(Nvec)
     Nx2 = Nvec(i);
     Nx3 = x3extent*(Nx2)/2/x2extent;
     shz = create_shzmesh(x2extent,Nx2,x3extent,Nx3,x3shift);
     figure(1)
-    subplot(3,2,i)
+    subplot(3,3,i)
     r = sqrt((shz.x3-x30).^2 + (shz.x2-x20).^2);
     toplot = exp(-r.^2/(2*r0^2));
     plotshz(shz,toplot,1), hold on
     plot(xcircle,ycircle,'k-','LineWidth',2)
     axis tight equal, box on
-    cb = colorbar; cb.Label.String = '\Delta\epsilon_v';clim([0 1])
-    set(gca,'FontSize',12,'Linewidth',1)
+    xlabel('x'), ylabel('depth')
+    cb = colorbar; cb.Label.String = '\Delta\epsilon_v';cb.LineWidth=1.5;
+    clim([0 1])
+    colormap(ttscm('bilbao',10))
+    title(['N = ' num2str(Nx2)])
+    set(gca,'FontSize',20,'Linewidth',1)
 end
-
+print('meshtest_meshdomain','-djpeg','-r300')
+%% loop through various meshes
 for i = 1:length(Nvec)
     Nx2 = Nvec(i);
     Nx3 = x3extent*(Nx2)/2/x2extent;
@@ -86,7 +94,6 @@ for i = 1:length(Nvec)
     lambda(lambda_positive) = -Inf;
 
     % provide stress perturbation as an IC (Gaussian source)    
-    strainmax = 1;%e-3;
     r = sqrt((shz.x3-x30).^2 + (shz.x2-x20).^2);
     % Gaussian source
     % deltastrainrate = [r.*0;strainmax.*exp(-r.^2/(2*r0^2))];   
@@ -112,33 +119,23 @@ end
 
 %% %%%%%% plot time series of strain rate evolution averaged over center
 cspec = jet(length(Nvec));
+tnorm = eta_matrix/30e3;
+
 figure(2),clf
+set(gcf,'Position',[0 0 1.5 1.5]*500)
 subplot(2,1,1)
 for i = 1:length(Nvec)
-    semilogx(tvec./86400,sol22_in_matrix(i,:),'-','LineWidth',2,'Color',cspec(i,:)), hold on
+    semilogx(tvec./tnorm,sqrt(sol22_in_matrix(i,:).^2 + sol23_in_matrix(i,:).^2),'-','LineWidth',2,'Color',cspec(i,:)), hold on
 end
-xlabel('t (days)')
-axis tight, ylim([0 1])
+xlabel('t*'), ylabel('\epsilon_v (inside)')
+axis tight, ylim([0 1.1])
+legend(num2str(Nvec'),'box','off')
 set(gca,'FontSize',20,'Linewidth',1.5)
 subplot(2,1,2)
 for i = 1:length(Nvec)
-    semilogx(tvec./86400,sol23_in_matrix(i,:),'-','LineWidth',2,'Color',cspec(i,:)), hold on
+    semilogx(tvec./tnorm,sqrt(sol22_out_matrix(i,:).^2 + sol23_out_matrix(i,:).^2),'-','LineWidth',2,'Color',cspec(i,:)), hold on
 end
-xlabel('t (days)')
-axis tight, ylim([0 1])
+xlabel('t*'), ylabel('\epsilon_v (outside)')
+axis tight, ylim([0 1.1])
 set(gca,'FontSize',20,'Linewidth',1.5)
-figure(3),clf
-subplot(2,1,1)
-for i = 1:length(Nvec)
-    semilogx(tvec./86400,sqrt(sol22_in_matrix(i,:).^2 + sol23_in_matrix(i,:).^2),'-','LineWidth',2,'Color',cspec(i,:)), hold on
-end
-xlabel('t (days)'), ylabel('\epsilon_v (inside)')
-axis tight, ylim([0 1])
-set(gca,'FontSize',20,'Linewidth',1.5)
-subplot(2,1,2)
-for i = 1:length(Nvec)
-    semilogx(tvec./86400,sqrt(sol22_out_matrix(i,:).^2 + sol23_out_matrix(i,:).^2),'-','LineWidth',2,'Color',cspec(i,:)), hold on
-end
-xlabel('t (days)'), ylabel('\epsilon_v (outside)')
-axis tight, ylim([0 1])
-set(gca,'FontSize',20,'Linewidth',1.5)
+print('meshtest_timeseries','-djpeg','-r300')
