@@ -17,8 +17,8 @@ bimat = construct_box(Lmesh, Lmesh, Nmesh, Nmesh);
 
 % shear moduli structure
 alpha_x = 0.*ones(bimat.N,1);
-alpha_z = ones(bimat.N,1)*0;
-alpha_z(abs(bimat.xc(:,2)) <= 1) = 1;
+alpha_z = zeros(bimat.N,1);
+alpha_z(abs(bimat.xc(:,2)) <= 1) = -2;
 
 %% compute source term at the interfaces
 source = ones(rcv.N,1);
