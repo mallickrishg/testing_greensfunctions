@@ -18,7 +18,7 @@ fy_val = 1;
 % provide plotting type (2-d grid or 1-d line)
 % 0 - line, 
 % 1 - xy grid
-eval_type = 1;
+eval_type = 0;
 
 n_pts = 100;
 x_vec = linspace(-3, 3, n_pts);
@@ -141,47 +141,45 @@ if eval_type==1
     % print('force2d_planestrain_fy','-djpeg','-r200')
 
 else
-    cspec = cool(n_eval);
-    for i = 1:n_eval 
-        figure(11)
-        ux = squeeze(ux_vals(:,:,i));
-        uy = squeeze(uy_vals(:,:,i));
-        subplot(2,1,1)
-        plot(x_mat,ux,'-','LineWidth',2,'Color',cspec(i,:)), hold on
-        axis tight, grid on
-        xlabel('x'), ylabel('u_x')
-        set(gca,'FontSize',15)
+    
+    figure(11),clf
+    ux = ux_numeric_int;
+    uy = uy_numeric_int;
+    subplot(2,1,1)
+    plot(x_mat,ux,'-','LineWidth',2), hold on
+    axis tight, grid on
+    xlabel('x'), ylabel('u_x')
+    set(gca,'FontSize',15)
 
-        subplot(2,1,2)
-        plot(x_mat,uy,'-','LineWidth',2,'Color',cspec(i,:)), hold on
-        axis tight, grid on
-        xlabel('x'), ylabel('u_y')
-        set(gca,'FontSize',15)
+    subplot(2,1,2)
+    plot(x_mat,uy,'-','LineWidth',2), hold on
+    axis tight, grid on
+    xlabel('x'), ylabel('u_y')
+    set(gca,'FontSize',15)
 
-        figure(12)
-        subplot(3,1,1)
-        toplot_n = squeeze(sxx_vals(:,:,i));
-        plot(x_mat,toplot_n,'-','LineWidth',2,'Color',cspec(i,:)), hold on
-        axis tight, grid on
-        xlabel('x'), ylabel('\sigma_{xx}')
-        set(gca,'FontSize',15)
+    figure(12)
+    subplot(3,1,1)
+    toplot_n = sxx_numeric_int;
+    plot(x_mat,toplot_n,'-','LineWidth',2), hold on
+    axis tight, grid on
+    xlabel('x'), ylabel('\sigma_{xx}')
+    set(gca,'FontSize',15)
 
-        subplot(3,1,2)
-        toplot_n = squeeze(syy_vals(:,:,i));
-        plot(x_mat,toplot_n,'-','LineWidth',2,'Color',cspec(i,:)), hold on
-        axis tight, grid on
-        xlabel('x'), ylabel('\sigma_{yy}')
-        set(gca,'FontSize',15)
+    subplot(3,1,2)
+    toplot_n = syy_numeric_int;
+    plot(x_mat,toplot_n,'-','LineWidth',2), hold on
+    axis tight, grid on
+    xlabel('x'), ylabel('\sigma_{yy}')
+    set(gca,'FontSize',15)
 
-        subplot(3,1,3)
-        toplot_n = squeeze(sxy_vals(:,:,i));
-        plot(x_mat,toplot_n,'-','LineWidth',2,'Color',cspec(i,:)), hold on
-        axis tight, grid on
-        xlabel('x'), ylabel('\sigma_{xy}')
-        set(gca,'FontSize',15)
+    subplot(3,1,3)
+    toplot_n = sxy_numeric_int;
+    plot(x_mat,toplot_n,'-','LineWidth',2), hold on
+    axis tight, grid on
+    xlabel('x'), ylabel('\sigma_{xy}')
+    set(gca,'FontSize',15)
         
 
-    end
 end
 
 
