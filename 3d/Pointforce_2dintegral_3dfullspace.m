@@ -10,7 +10,7 @@ y_vec = linspace(-3, 3, n_pts);
 
 % create a box grid of points
 [x_mat,y_mat] = meshgrid(x_vec, y_vec);
-z_mat = zeros(numel(x_mat),1)+1e-4;
+z_mat = zeros(numel(x_mat),1)+1e-6;
 
 % triangle source (the triangle lies in the x-y plane)
 % triangle domain: (0,0),(l_x,dl_y),(0,l_y)
