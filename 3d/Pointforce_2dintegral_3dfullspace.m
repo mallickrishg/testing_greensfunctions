@@ -16,7 +16,7 @@ z_mat = zeros(numel(x_mat),1)+1e-6;
 % triangle domain: (0,0),(l_x,dl_y),(0,l_y)
 l_x = 1;
 l_y = 2;
-dl_y = 0.0;
+dl_y = -1.0;
 % need to provide this triangle in terms of a double integral over x and f(x)
 ymax = @(x) l_y - (l_y-dl_y)*(x/l_x);
 ymin = @(x) dl_y*x/l_x;
